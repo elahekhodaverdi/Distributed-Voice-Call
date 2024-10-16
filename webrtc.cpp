@@ -199,13 +199,26 @@ void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate,
 // Utility function to read the rtc::message_variant into a QByteArray
 QByteArray WebRTC::readVariant(const rtc::message_variant &data)
 {
+    if (std::holds_alternative<rtc::binary>(data)) {
+        const rtc::binary &binData = std::get<rtc::binary>(data);
+        return QByteArray(reinterpret_cast<const char *>(binData.data()),
+                          static_cast<int>(binData.size()));
 
+    } else if (std::holds_alternative<std::string>(data)) {
+        const std::string &strData = std::get<std::string>(data);
+        return QByteArray(strData.c_str(), static_cast<int>(strData.size()));
+    }
+    return QByteArray();
 }
 
 // Utility function to convert rtc::Description to JSON format
 QString WebRTC::descriptionToJson(const rtc::Description &description)
 {
-
+    auto temp = QString("{\"type\": \"%1\", \"sdp\": \"%2\"}");
+    auto typeString = QString::fromStdString(description.typeString());
+    auto sdp = QString::fromStdString(description);
+    QJsonDocument doc = QJsonDocument::fromJson(temp.arg(typeString, sdp).toUtf8());
+    return doc.toJson();
 }
 
 // Retrieves the current bit rate
