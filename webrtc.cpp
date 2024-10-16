@@ -224,55 +224,55 @@ QString WebRTC::descriptionToJson(const rtc::Description &description)
 // Retrieves the current bit rate
 int WebRTC::bitRate() const
 {
-
+    return m_bitRate;
 }
 
 // Set a new bit rate and emit the bitRateChanged signal
 void WebRTC::setBitRate(int newBitRate)
 {
-
+    m_bitRate = newBitRate;
 }
 
 // Reset the bit rate to its default value
 void WebRTC::resetBitRate()
 {
-
+    m_bitRate = 48000;
 }
 
 // Sets a new payload type and emit the payloadTypeChanged signal
 void WebRTC::setPayloadType(int newPayloadType)
 {
-
+    m_payloadType = newPayloadType;
 }
 
 // Resets the payload type to its default value
 void WebRTC::resetPayloadType()
 {
-
+    m_payloadType = 111;
 }
 
 // Retrieve the current SSRC value
 rtc::SSRC WebRTC::ssrc() const
 {
-
+    return m_ssrc;
 }
 
 // Set a new SSRC and emit the ssrcChanged signal
 void WebRTC::setSsrc(rtc::SSRC newSsrc)
 {
-
+    m_ssrc = newSsrc;
 }
 
 // Reset the SSRC to its default value
 void WebRTC::resetSsrc()
 {
-
+    m_ssrc = 2;
 }
 
 // Retrieve the current payload type
 int WebRTC::payloadType() const
 {
-
+    return m_payloadType;
 }
 
 
@@ -284,17 +284,15 @@ int WebRTC::payloadType() const
 
 bool WebRTC::isOfferer() const
 {
-
+    return m_isOfferer;
 }
 
 void WebRTC::setIsOfferer(bool newIsOfferer)
 {
-
+    m_isOfferer = newIsOfferer;
 }
 
 void WebRTC::resetIsOfferer()
 {
-
+    m_isOfferer = false;
 }
-
-
