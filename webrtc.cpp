@@ -176,14 +176,18 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 // Set the remote SDP description for the peer that contains metadata about the media being transmitted
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
-
+    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
+    std::string type = m_isOfferer ? "offer" : "answer";
+    connection->setRemoteDescription(rtc::Description(sdp.toStdString(), type));
 }
 
 // Add remote ICE candidates to the peer connection
 void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
 {
-
+    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
+    connection->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
 }
+
 
 
 /*
