@@ -59,13 +59,13 @@ void WebRTC::init(const QString &id, bool isOfferer)
 void WebRTC::addPeer(const QString &peerId)
 {
     // Create and add a new peer connection
-
-
+    auto newPeer = std::make_shared<rtc::PeerConnection>(m_config);
+    m_peerConnections.insert(peerId, newPeer);
     // Set up a callback for when the local description is generated
 
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
-
+        emit localDescriptionGenerated(peerId, QString::fromStdString(description.generateSdp()));
     });
 
 
@@ -73,7 +73,9 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for handling local ICE candidates
     newPeer->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
         // Emit the local candidates using the localCandidateGenerated signal
-
+        emit localCandidateGenerated(peerId,
+                                     QString::fromStdString(candidate.candidate()),
+                                     QString::fromStdString(candidate.mid()));
     });
 
 
@@ -81,7 +83,22 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for when the state of the peer connection changes
     newPeer->onStateChange([this, peerId](rtc::PeerConnection::State state) {
         // Handle different states like New, Connecting, Connected, Disconnected, etc.
-
+        switch (state) {
+        case rtc::PeerConnection::State::New:
+            break;
+        case rtc::PeerConnection::State::Connecting:
+            break;
+        case rtc::PeerConnection::State::Connected:
+            break;
+        case rtc::PeerConnection::State::Disconnected:
+            break;
+        case rtc::PeerConnection::State::Closed:
+            break;
+        case rtc::PeerConnection::State::Failed:
+            break;
+        default:
+            break;
+        }
     });
 
 
@@ -89,16 +106,20 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for monitoring the gathering state
     newPeer->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
-
+        if (rtc::PeerConnection::GatheringState::Complete == state)
+            emit gatheringComplited(peerId);
     });
 
     // Set up a callback for handling incoming tracks
     newPeer->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
         // handle the incoming media stream, emitting the incommingPacket signal if a stream is received
-
+        
     });
-
     // Add an audio track to the peer connection
+    rtc::Description::Audio audio = rtc::Description::Audio("audio",
+                                                            rtc::Description::Direction::SendRecv);
+    auto track = newPeer->addTrack(audio);
+    m_peerTracks.insert(peerId, track);
 }
 
 // Set the local description for the peer's connection
