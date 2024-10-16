@@ -45,15 +45,15 @@ WebRTC::~WebRTC()
 void WebRTC::init(const QString &id, bool isOfferer)
 {
     // Initialize WebRTC using libdatachannel library
-
+    rtc::InitLogger(rtc::LogLevel::Info, NULL);
     // Create an instance of rtc::Configuration to Set up ICE configuration
-
+    rtc::Configuration config;
+    config.iceServers.emplace_back("stun:stun.l.google.com:19302");
     // Add a STUN server to help peers find their public IP addresses
-
+    m_config = config;
     // Add a TURN server for relaying media if a direct connection can't be established
 
     // Set up the audio stream configuration
-
 }
 
 void WebRTC::addPeer(const QString &peerId)
