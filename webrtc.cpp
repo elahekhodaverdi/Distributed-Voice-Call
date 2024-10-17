@@ -177,8 +177,10 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
-    std::string type = m_isOfferer ? "offer" : "answer";
-    connection->setRemoteDescription(rtc::Description(sdp.toStdString(), type));
+    QJsonDocument doc = QJsonDocument::fromJson(sdp.toUtf8());
+    QString type = jsonObj.value("type").toString();
+    QString sdpValue = jsonObj.value("sdp").toString();
+    connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
 }
 
 // Add remote ICE candidates to the peer connection
