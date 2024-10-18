@@ -24,21 +24,28 @@ PATH_TO_LIBDATACHANNEL = E:/CN-1/libdatachannel
 INCLUDEPATH += $$PATH_TO_LIBDATACHANNEL/include
 LIBS += -L$$PATH_TO_LIBDATACHANNEL/Windows/Mingw64 -ldatachannel.dll
 LIBS += -LC:/Qt/Tools/OpenSSLv3/Win_x64/bin -lcrypto-3-x64 -lssl-3-x64
+INCLUDEPATH += C:/Qt/Tools/OpenSSLv3/Win_x64/include
 LIBS += -lws2_32
 LIBS += -lssp
 
 
+
 PATH_TO_OPUS = E:/CN-1/opus
 INCLUDEPATH += $$PATH_TO_OPUS/include
-LIBS += -L$$PATH_TO_OPUS /Windows/Mingw64 -lopus
+LIBS += -L$$PATH_TO_OPUS/Windows/Mingw64 -lopus
 
-PATH_TO_SIO = E:/CN-1/socket.io-client-cpp
+
+PATH_TO_SIO = E:/CN-1/socketio-client-cpp
 INCLUDEPATH += $$PATH_TO_SIO/lib/websocketpp
-INCLUDEPATH += $$PATH_TO_SIO /lib/asio/asio/include
+INCLUDEPATH += $$PATH_TO_SIO/lib/asio/asio/include
 INCLUDEPATH += $$PATH_TO_SIO/lib/rapidjson/include
+DEFINES += BOOST_DATE_TIME_NO_LIB
+DEFINES += BOOST_REGEX_NO_LIB
+DEFINES += ASIO_STANDALONE
 DEFINES += _WEBSOCKETPP_CPP11_STL_
 DEFINES += _WEBSOCKETPP_CPP11_FUNCTIONAL_
 DEFINES += SIO_TLS
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
