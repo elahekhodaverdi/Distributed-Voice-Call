@@ -9,9 +9,9 @@ AudioInput::AudioInput()
     // int error;
     // opusEncoder = opus_encoder_create(8000, 1, OPUS_APPLICATION_AUDIO, &error);
     QAudioFormat format;
-    format.setSampleRate(8000);
+    format.setSampleRate(48000);
     format.setChannelCount(1);
-    format.setSampleFormat(QAudioFormat::UInt8);
+    format.setSampleFormat(QAudioFormat::Float);
 
     QAudioDevice device = QMediaDevices::defaultAudioInput();
 
@@ -21,7 +21,6 @@ AudioInput::AudioInput()
         qDebug() << format.sampleRate();
         qDebug() << format.sampleFormat();
     }
-
     audio = new QAudioSource(device, format, this);
     if (!audio) {
         qCritical() << "Failed to initialize audio source!";

@@ -27,7 +27,7 @@ private:
     void setupAudio();
     void setupDecoder();
     //OpusDecoder* decoder;
-    std::queue<QByteArray> playQueue;
+    QByteArray playQueue;
     QIODevice* ioDevice;
     QAudioFormat audioFormat;
     QAudioSink* audioSink;
