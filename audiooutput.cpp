@@ -7,22 +7,22 @@ AudioOutput::AudioOutput(QObject *parent)
 }
 
 AudioOutput::~AudioOutput(){
-    opus_decoder_destroy(decoder);
+    //opus_decoder_destroy(decoder);
 }
 
 
-void AudioOutput::setupDecoder(){
-    int error;
-    int sampleRate = 8000;
-    int channels = 1;
+// void AudioOutput::setupDecoder(){
+//     int error;
+//     int sampleRate = 8000;
+//     int channels = 1;
 
-    decoder = opus_decoder_create(sampleRate, channels, &error);
+//     decoder = opus_decoder_create(sampleRate, channels, &error);
 
-    if (error != OPUS_OK) {
-        qFatal("Failed to create decoder.\n");
-        return;
-    }
-}
+//     if (error != OPUS_OK) {
+//         qFatal("Failed to create decoder.\n");
+//         return;
+//     }
+// }
 
 void AudioOutput::setupAudio()
 {
@@ -44,21 +44,19 @@ void AudioOutput::addData(const QByteArray &data){
 void AudioOutput::play(){
     mutex.lock();
 
-
-
     QByteArray data = playQueue.front();
     playQueue.pop();
-    opus_int16 decodedOutput[160];
+    // opus_int16 decodedOutput[160];
 
-    int decodedBytes = opus_decode(decoder,
-                                     reinterpret_cast<const unsigned char*>(data.constData()),
-                                     data.size(),
-                                     decodedOutput,
-                                     160,
-                                     0);
-    const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput);
+    // int decodedBytes = opus_decode(decoder,
+    //                                  reinterpret_cast<const unsigned char*>(data.constData()),
+    //                                  data.size(),
+    //                                  decodedOutput,
+    //                                  160,
+    //                                  0);
+    // const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput);
 
-    ioDevice->write(outputToWrite);
+    ioDevice->write(data);
 
 
     mutex.unlock();

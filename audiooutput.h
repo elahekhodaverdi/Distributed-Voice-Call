@@ -9,7 +9,7 @@
 #include <QMutex>
 #include <QBuffer>
 #include <queue>
-#include <opus.h>
+//#include <opus.h>
 
 class AudioOutput : public QObject
 {
@@ -25,7 +25,7 @@ public slots:
 private:
     void setupAudio();
     void setupDecoder();
-    OpusDecoder* decoder;
+    //OpusDecoder* decoder;
     std::queue<QByteArray> playQueue;
     QIODevice* ioDevice;
     QAudioFormat audioFormat;
