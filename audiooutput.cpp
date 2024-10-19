@@ -6,6 +6,24 @@ AudioOutput::AudioOutput(QObject *parent)
     connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
 }
 
+AudioOutput::~AudioOutput(){
+    opus_decoder_destroy(decoder);
+}
+
+
+void AudioOutput::setupDecoder(){
+    int error;
+    int sampleRate = 8000;
+    int channels = 1;
+
+    decoder = opus_decoder_create(sampleRate, channels, &error);
+
+    if (error != OPUS_OK) {
+        qFatal("Failed to create decoder.\n");
+        return;
+    }
+}
+
 void AudioOutput::setupAudio()
 {
     audioFormat.setSampleRate(8000);
@@ -25,16 +43,7 @@ void AudioOutput::addData(const QByteArray &data){
 
 void AudioOutput::play(){
     mutex.lock();
-    int error;
-    int sampleRate = 8000;
-    int channels = 1;
 
-    OpusDecoder* decoder = opus_decoder_create(sampleRate, channels, &error);
-
-    if (error != OPUS_OK) {
-        qFatal("Failed to create decoder.\n");
-        return;
-    }
 
 
     QByteArray data = playQueue.front();

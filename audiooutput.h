@@ -16,6 +16,7 @@ class AudioOutput : public QObject
     Q_OBJECT
 public:
     explicit AudioOutput(QObject *parent = nullptr);
+    ~AudioOutput();
     void addData(const QByteArray &data);
 
 public slots:
@@ -23,6 +24,8 @@ public slots:
 
 private:
     void setupAudio();
+    void setupDecoder();
+    OpusDecoder* decoder;
     std::queue<QByteArray> playQueue;
     QIODevice* ioDevice;
     QAudioFormat audioFormat;
