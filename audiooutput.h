@@ -21,6 +21,7 @@ public:
 public slots:
     void addData(const QByteArray &data);
     void play();
+    void handleStateChanged(QAudio::State newState);
 
 private:
     void setupAudio();

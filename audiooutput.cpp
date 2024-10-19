@@ -5,6 +5,7 @@ AudioOutput::AudioOutput(QObject *parent)
     : QObject{parent}
 {
     connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
+
 }
 
 AudioOutput::~AudioOutput(){
@@ -36,11 +37,33 @@ void AudioOutput::setupAudio()
         qCritical() << "Failed to initialize audio sink!";
         return;
     }
-
+    connect(audioSink, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
     ioDevice = audioSink->start();
     if (!ioDevice) {
         qCritical() << "Failed to start audio output!";
         return;
+    }
+}
+
+void AudioOutput::handleStateChanged(QAudio::State newState)
+{
+    qDebug() << "here in state change!\n";
+    switch (newState) {
+    case QAudio::IdleState:
+        // Finished playing (no more data)
+        qDebug() << "idle\n";
+        break;
+
+    case QAudio::StoppedState:
+        // Stopped for other reasons
+        // if (->error() != QAudio::NoError) {
+        //     // Error handling
+        // }
+        break;
+
+    default:
+        // ... other cases as appropriate
+        break;
     }
 }
 
