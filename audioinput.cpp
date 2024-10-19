@@ -9,11 +9,19 @@ AudioInput::AudioInput()
     // int error;
     // opusEncoder = opus_encoder_create(8000, 1, OPUS_APPLICATION_AUDIO, &error);
     QAudioFormat format;
-    format.setSampleRate(8000);
+    format.setSampleRate(48000);
     format.setChannelCount(1);
-    format.setSampleFormat(QAudioFormat::Int16);
+    format.setSampleFormat(QAudioFormat::Float);
 
-    audio = new QAudioSource(format, this);
+    QAudioDevice device = QMediaDevices::defaultAudioInput();
+
+    if (!device.isFormatSupported(format)) {
+        qDebug() << "format not supported";
+        format = device.preferredFormat();
+        qDebug() << format.sampleRate();
+        qDebug() << format.sampleFormat();
+    }
+    audio = new QAudioSource(device, format, this);
     if (!audio) {
         qCritical() << "Failed to initialize audio source!";
         return;
