@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     AudioInput audioInput;
     AudioOutput audioOutput;
-    connect(&audioInput, &AudioInput::AudioIsReady, &audioOutput, &AudioOutput::addFile);
+    QObject::connect(&audioInput, &AudioInput::AudioIsReady, &audioOutput, &AudioOutput::addData);
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
