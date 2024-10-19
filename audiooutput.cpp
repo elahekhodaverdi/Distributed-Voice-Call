@@ -73,7 +73,7 @@ void AudioOutput::addData(const QByteArray &data){
     qDebug() << "hehe6";
     playQueue.push(data);
     mutex.unlock();
-    emit newPacket();
+    Q_EMIT newPacket();
 }
 
 void AudioOutput::play(){

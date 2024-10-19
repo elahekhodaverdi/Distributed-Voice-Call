@@ -18,7 +18,7 @@ public:
     explicit AudioOutput(QObject *parent = nullptr);
     ~AudioOutput();
 
-public slots:
+public Q_SLOTS:
     void addData(const QByteArray &data);
     void play();
     void handleStateChanged(QAudio::State newState);
@@ -34,7 +34,7 @@ private:
     QMediaDevices mediaDevices;
     QMutex mutex;
 
-signals:
+Q_SIGNALS:
     void newPacket();  // Signal emitted when new data is added
 
 };
