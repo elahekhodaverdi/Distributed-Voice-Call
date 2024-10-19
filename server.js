@@ -9,14 +9,14 @@ io.on('connection', (socket) => {
 
     socket.emit('your_id', socket.id);
 
-    socket.on('send_message', (data) => {
+    socket.on('send_sdp', (data) => {
         const targetClientId = data.targetClientId;
-        const message = data.message;
+        const sdp = data.sdp;
 
         if (clients[targetClientId]) {
-            clients[targetClientId].emit('receive_message', {
+            clients[targetClientId].emit('send_sdp', {
                 from: socket.id,
-                message: message
+                sdp: sdp
             });
         } else {
             socket.emit('error', { message: 'Target client not connected' });
@@ -27,4 +27,6 @@ io.on('connection', (socket) => {
         console.log('Client disconnected:', socket.id);
         delete clients[socket.id];
     });
+
+    
 });
