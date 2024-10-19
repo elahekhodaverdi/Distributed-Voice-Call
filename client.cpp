@@ -31,28 +31,19 @@ Client::Client(QObject *parent)
                             qDebug() << "Message from client" << fromClientId << ":" << message;
                         }));
 
-    connect(&inputThread, &QThread::started, this, &Client::sendMessage);
     connect(this, &Client::answerIsReadyToSend, this, &Client::sendAnswer);
     connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
-    inputThread.start();
 }
 
-void Client::sendMessage()
+void Client::sendMessage(const QString &id)
 {
-    QTextStream stream(stdin);
-    QString targetClientId, message;
-
-    qDebug() << "Enter target client ID:";
-    stream >> targetClientId;
-
-    qDebug() << "Enter message:";
-    stream >> message;
-
-    Q_EMIT offerIsReadyToSend(message);
+    qDebug() << "send message";
+    Q_EMIT offerIsReadyToSend(id);
 }
 
-void Client::sendOffer(QString id)
+void Client::sendOffer(const QString & id)
 {
+    qDebug() << "send Offer";
     QJsonObject msg;
     msg["targetClientId"] = id;
     msg["sdp"] = "elahe";
@@ -60,12 +51,12 @@ void Client::sendOffer(QString id)
     client.socket()->emit("offer_sdp", sio::message::list(sdpJson));
 }
 
-void Client::sendAnswer(QString id)
+void Client::sendAnswer(const QString & id)
 {
+    qDebug() << "send Answer";
     QJsonObject msg;
     msg["targetClientId"] = id;
     msg["sdp"] = "ali";
     std::string sdpJson = QString(QJsonDocument(msg).toJson(QJsonDocument::Compact)).toStdString();
     client.socket()->emit("answer_sdp", sio::message::list(sdpJson));
-
 }

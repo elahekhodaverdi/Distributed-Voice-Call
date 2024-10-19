@@ -35,7 +35,6 @@ Window {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
             }
-
         }
 
         TextField{
@@ -69,8 +68,8 @@ Window {
                 if(pushed){
                     Material.background = "red"
                     text = "End Call"
-                }
-                else{
+                    client.sendMessage(textfield.text)
+                } else {
                     Material.background = "green"
                     text = "Call"
                     textfield.clear()

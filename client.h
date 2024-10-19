@@ -12,20 +12,20 @@ class Client : public QObject
 
 public:
     explicit Client(QObject *parent = nullptr);
+    ~Client() {}
 
 Q_SIGNALS:
-    void offerIsReadyToSend(QString id);
-    void answerIsReadyToSend(QString id);
+    void offerIsReadyToSend(const QString & id);
+    void answerIsReadyToSend(const QString & id);
 
 public Q_SLOTS:
-    void sendOffer(QString id);
-    void sendAnswer(QString id);
-    void sendMessage();
+    void sendOffer(const QString &id);
+    void sendAnswer(const QString & id);
+    void sendMessage(const QString &id);
 
 private:
     sio::client client;
     QString mySocketId;
-    QThread inputThread;
 };
 
 #endif // CLIENT_H

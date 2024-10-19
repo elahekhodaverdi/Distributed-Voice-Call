@@ -70,7 +70,6 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
 
 void AudioOutput::addData(const QByteArray &data){
     mutex.lock();
-    qDebug() << "hehe6";
     playQueue.push(data);
     mutex.unlock();
     Q_EMIT newPacket();
@@ -91,8 +90,6 @@ void AudioOutput::play(){
     // const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput);
 
     ioDevice->write(data);
-    qDebug() << "hehe9";
-
     mutex.unlock();
 }
 
