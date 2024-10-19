@@ -4,8 +4,8 @@
 AudioOutput::AudioOutput(QObject *parent)
     : QObject{parent}
 {
-    setupAudio();
     connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
+
 }
 
 AudioOutput::~AudioOutput(){
@@ -31,10 +31,7 @@ void AudioOutput::setupAudio()
     audioFormat.setSampleRate(48000);
     audioFormat.setChannelCount(1);
     audioFormat.setSampleFormat(QAudioFormat::Float);
-    if (!audioFormat.isValid()) {
-        qDebug() << "audio format is not valid";
-        return;
-    }
+
     audioSink = new QAudioSink(QMediaDevices::defaultAudioOutput(), audioFormat, this);
     if (!audioSink) {
         qCritical() << "Failed to initialize audio sink!";
@@ -66,7 +63,6 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
 
     default:
         // ... other cases as appropriate
-        qDebug() << "new" << newState;
         break;
     }
 }
@@ -74,16 +70,15 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
 void AudioOutput::addData(const QByteArray &data){
     mutex.lock();
     qDebug() << "hehe6";
-    playQueue.append(data.data());
+    playQueue.push(data);
     mutex.unlock();
     emit newPacket();
 }
 
 void AudioOutput::play(){
     mutex.lock();
-    long long audiolen = std::min(playQueue.size(), audioSink->bytesFree());
-    QByteArray data = playQueue.first(audiolen);
-    playQueue.remove(0, audiolen);
+    QByteArray data = playQueue.front();
+    playQueue.pop();
     // opus_int16 decodedOutput[160];
 
     // int decodedBytes = opus_decode(decoder,
@@ -93,9 +88,9 @@ void AudioOutput::play(){
     //                                  160,
     //                                  0);
     // const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput);
-    qDebug() << playQueue.size() << "," << data.size() << " , " << audioSink->bytesFree();
-    int a = ioDevice->write(data.data(), audiolen);
-    qDebug() << "hehe9: " << a;
+
+    ioDevice->write(data);
+    qDebug() << "hehe9";
 
     mutex.unlock();
 }
