@@ -4,6 +4,7 @@
 AudioOutput::AudioOutput(QObject *parent)
     : QObject{parent}
 {
+    setupAudio();
     connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
 
 }
@@ -28,9 +29,9 @@ AudioOutput::~AudioOutput(){
 
 void AudioOutput::setupAudio()
 {
-    audioFormat.setSampleRate(48000);
+    audioFormat.setSampleRate(8000);
     audioFormat.setChannelCount(1);
-    audioFormat.setSampleFormat(QAudioFormat::Float);
+    audioFormat.setSampleFormat(QAudioFormat::Int16);
 
     audioSink = new QAudioSink(QMediaDevices::defaultAudioOutput(), audioFormat, this);
     if (!audioSink) {

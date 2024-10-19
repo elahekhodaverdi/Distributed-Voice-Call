@@ -11,18 +11,9 @@ AudioInput::AudioInput()
     QAudioFormat format;
     format.setSampleRate(8000);
     format.setChannelCount(1);
-    format.setSampleFormat(QAudioFormat::UInt8);
+    format.setSampleFormat(QAudioFormat::Int16);
 
-    QAudioDevice device = QMediaDevices::defaultAudioInput();
-
-    if (!device.isFormatSupported(format)) {
-        qDebug() << "format not supported";
-        format = device.preferredFormat();
-        qDebug() << format.sampleRate();
-        qDebug() << format.sampleFormat();
-    }
-
-    audio = new QAudioSource(device, format, this);
+    audio = new QAudioSource(format, this);
     if (!audio) {
         qCritical() << "Failed to initialize audio source!";
         return;
@@ -70,7 +61,6 @@ qint64 AudioInput::writeData(const char *data, qint64 len)
     //                                opusData,
     //                                sizeof(opusData));
     if (len < 0) {
-        qDebug() << "hehe";
         return len;
     }
     QByteArray encodedOpusData(data, len);
