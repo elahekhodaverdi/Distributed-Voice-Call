@@ -13,7 +13,13 @@ class Client : public QObject
 public:
     explicit Client(QObject *parent = nullptr);
 
+Q_SIGNALS:
+    void offerIsReadyToSend(QString id);
+    void answerIsReadyToSend(QString id);
+
 public Q_SLOTS:
+    void sendOffer(QString id);
+    void sendAnswer(QString id);
     void sendMessage();
 
 private:

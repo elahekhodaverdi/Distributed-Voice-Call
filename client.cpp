@@ -1,6 +1,9 @@
 #include "client.h"
 #include <QDebug>
 #include <QTextStream>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
 
 Client::Client(QObject *parent)
     : QObject(parent)
@@ -9,9 +12,18 @@ Client::Client(QObject *parent)
 
     client.socket()->on("your_id", sio::socket::event_listener([this](sio::event &ev) {
                             QString data = QString::fromStdString(ev.get_message()->get_string());
+                            qDebug() << "MY ID is:  " << data;
                             mySocketId = data;
                         }));
-    client.socket()->on("receive_message", sio::socket::event_listener([this](sio::event &ev) {
+    client.socket()->on("offer_sdp", sio::socket::event_listener([this](sio::event &ev) {
+                            auto data = ev.get_message()->get_map();
+                            QString fromClientId = QString::fromStdString(
+                                data["from"]->get_string());
+                            QString sdp = QString::fromStdString(data["sdp"]->get_string());
+                            qDebug() << "Message from client" << fromClientId << ":" << sdp;
+                            Q_EMIT answerIsReadyToSend(fromClientId);
+                        }));
+    client.socket()->on("answer_sdp", sio::socket::event_listener([this](sio::event &ev) {
                             auto data = ev.get_message()->get_map();
                             QString fromClientId = QString::fromStdString(
                                 data["from"]->get_string());
@@ -20,6 +32,8 @@ Client::Client(QObject *parent)
                         }));
 
     connect(&inputThread, &QThread::started, this, &Client::sendMessage);
+    connect(this, &Client::answerIsReadyToSend, this, &Client::sendAnswer);
+    connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
     inputThread.start();
 }
 
@@ -34,8 +48,24 @@ void Client::sendMessage()
     qDebug() << "Enter message:";
     stream >> message;
 
-    sio::message::ptr msgData = sio::object_message::create();
-    msgData->get_map()["targetClientId"] = sio::string_message::create(targetClientId.toStdString());
-    msgData->get_map()["message"] = sio::string_message::create(message.toStdString());
-    client.socket()->emit("send_message", sio::message::list(msgData));
+    Q_EMIT offerIsReadyToSend(message);
+}
+
+void Client::sendOffer(QString id)
+{
+    QJsonObject msg;
+    msg["targetClientId"] = id;
+    msg["sdp"] = "elahe";
+    std::string sdpJson = QString(QJsonDocument(msg).toJson(QJsonDocument::Compact)).toStdString();
+    client.socket()->emit("offer_sdp", sio::message::list(sdpJson));
+}
+
+void Client::sendAnswer(QString id)
+{
+    QJsonObject msg;
+    msg["targetClientId"] = id;
+    msg["sdp"] = "ali";
+    std::string sdpJson = QString(QJsonDocument(msg).toJson(QJsonDocument::Compact)).toStdString();
+    client.socket()->emit("answer_sdp", sio::message::list(sdpJson));
+
 }
