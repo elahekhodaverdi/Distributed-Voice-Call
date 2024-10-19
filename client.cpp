@@ -8,7 +8,6 @@
 Client::Client(QObject *parent)
     : QObject(parent)
 {
-    client.connect("http://localhost:3000");
 
     client.socket()->on("your_id", sio::socket::event_listener([this](sio::event &ev) {
                             QString data = QString::fromStdString(ev.get_message()->get_string());
@@ -27,10 +26,11 @@ Client::Client(QObject *parent)
                             auto data = ev.get_message()->get_map();
                             QString fromClientId = QString::fromStdString(
                                 data["from"]->get_string());
-                            QString message = QString::fromStdString(data["message"]->get_string());
+                            QString message = QString::fromStdString(data["sdp"]->get_string());
                             qDebug() << "Message from client" << fromClientId << ":" << message;
                         }));
 
+    client.connect("http://localhost:3000");
     connect(this, &Client::answerIsReadyToSend, this, &Client::sendAnswer);
     connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
 }
