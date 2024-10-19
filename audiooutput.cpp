@@ -1,4 +1,5 @@
 #include "audiooutput.h"
+#include <QDebug>
 
 AudioOutput::AudioOutput(QObject *parent)
     : QObject{parent}
@@ -26,24 +27,33 @@ AudioOutput::~AudioOutput(){
 
 void AudioOutput::setupAudio()
 {
-    audioFormat.setSampleRate(8000);
+    audioFormat.setSampleRate(48000);
     audioFormat.setChannelCount(1);
-    audioFormat.setSampleFormat(QAudioFormat::UInt8);
+    audioFormat.setSampleFormat(QAudioFormat::Float);
 
     audioSink = new QAudioSink(QMediaDevices::defaultAudioOutput(), audioFormat, this);
+    if (!audioSink) {
+        qCritical() << "Failed to initialize audio sink!";
+        return;
+    }
+
     ioDevice = audioSink->start();
+    if (!ioDevice) {
+        qCritical() << "Failed to start audio output!";
+        return;
+    }
 }
 
 void AudioOutput::addData(const QByteArray &data){
     mutex.lock();
+    qDebug() << "hehe6";
     playQueue.push(data);
-    emit newPacket();
     mutex.unlock();
+    emit newPacket();
 }
 
 void AudioOutput::play(){
     mutex.lock();
-
     QByteArray data = playQueue.front();
     playQueue.pop();
     // opus_int16 decodedOutput[160];
@@ -57,7 +67,7 @@ void AudioOutput::play(){
     // const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput);
 
     ioDevice->write(data);
-
+    qDebug() << "hehe9";
 
     mutex.unlock();
 }

@@ -6,8 +6,8 @@
 // #include <opus
 AudioInput::AudioInput()
 {
-    int error;
-    opusEncoder = opus_encoder_create(8000, 1, OPUS_APPLICATION_AUDIO, &error);
+    // int error;
+    // opusEncoder = opus_encoder_create(8000, 1, OPUS_APPLICATION_AUDIO, &error);
     QAudioFormat format;
     format.setSampleRate(8000);
     format.setChannelCount(1);
@@ -18,18 +18,26 @@ AudioInput::AudioInput()
     if (!device.isFormatSupported(format)) {
         qDebug() << "format not supported";
         format = device.preferredFormat();
+        qDebug() << format.sampleRate();
+        qDebug() << format.sampleFormat();
     }
 
     audio = new QAudioSource(device, format, this);
-
+    if (!audio) {
+        qCritical() << "Failed to initialize audio source!";
+        return;
+    }
     connect(audio, &QAudioSource::stateChanged, this, &AudioInput::handleStateChanged);
-    this->open(QIODeviceBase::ReadWrite);
+    if (!this->open(QIODeviceBase::ReadWrite)) {
+        qCritical() << "Failed to open QIODevice!";
+        return;
+    }
     audio->start(this);
 }
 
 AudioInput::~AudioInput()
 {
-    opus_encoder_destroy(opusEncoder);
+    // opus_encoder_destroy(opusEncoder);
 }
 void AudioInput::handleStateChanged(QAudio::State newState)
 {
@@ -53,24 +61,24 @@ void AudioInput::handleStateChanged(QAudio::State newState)
 
 qint64 AudioInput::writeData(const char *data, qint64 len)
 {
-    unsigned char opusData[4000];
-    int frameSize = len / sizeof(opus_int16);
+    // unsigned char opusData[4000];
+    // int frameSize = len / sizeof(opus_int16);
 
-    int encodedBytes = opus_encode(opusEncoder,
-                                   reinterpret_cast<const opus_int16 *>(data),
-                                   frameSize,
-                                   opusData,
-                                   sizeof(opusData));
-
-    if (encodedBytes < 0)
-        qDebug() << "ridi";
-    QByteArray encodedOpusData(reinterpret_cast<const char *>(opusData), encodedBytes);
+    // int encodedBytes = opus_encode(opusEncoder,
+    //                                reinterpret_cast<const opus_int16 *>(data),
+    //                                frameSize,
+    //                                opusData,
+    //                                sizeof(opusData));
+    if (len < 0) {
+        qDebug() << "hehe";
+        return len;
+    }
+    QByteArray encodedOpusData(data, len);
     emit AudioIsReady(encodedOpusData);
-    return encodedBytes;
+    return len;
 }
 
 qint64 AudioInput::readData(char *data, qint64 maxlen)
 {
-    qDebug() << "ridi2";
     return 0;
 }

@@ -18,7 +18,7 @@ Q_SIGNALS:
 private:
     void handleStateChanged(QAudio::State newState);
     QAudioSource *audio;
-    OpusEncoder *opusEncoder;
+    // OpusEncoder *opusEncoder;
 
 protected:
     qint64 readData(char *data, qint64 maxlen) override;
