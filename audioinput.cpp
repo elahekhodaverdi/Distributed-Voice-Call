@@ -68,3 +68,9 @@ qint64 AudioInput::writeData(const char *data, qint64 len)
     emit AudioIsReady(encodedOpusData);
     return encodedBytes;
 }
+
+qint64 AudioInput::readData(char *data, qint64 maxlen)
+{
+    qDebug() << "ridi2";
+    return 0;
+}
