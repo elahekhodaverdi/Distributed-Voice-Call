@@ -1,10 +1,10 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "SocketIO/sio_client.h"
 #include <QObject>
 #include <QString>
 #include <QThread>
-#include "SocketIO/sio_client.h"
 
 class Client : public QObject
 {
@@ -13,7 +13,7 @@ class Client : public QObject
 public:
     explicit Client(QObject *parent = nullptr);
 
-private slots:
+public Q_SLOTS:
     void sendMessage();
 
 private:
