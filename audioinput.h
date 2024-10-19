@@ -13,7 +13,7 @@ public:
     ~AudioInput();
 
 Q_SIGNALS:
-    void AudioIsReady(QByteArray data);
+    void AudioIsReady(const QByteArray &data);
 
 private:
     void handleStateChanged(QAudio::State newState);

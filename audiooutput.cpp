@@ -28,9 +28,9 @@ AudioOutput::~AudioOutput(){
 
 void AudioOutput::setupAudio()
 {
-    audioFormat.setSampleRate(48000);
+    audioFormat.setSampleRate(8000);
     audioFormat.setChannelCount(1);
-    audioFormat.setSampleFormat(QAudioFormat::Float);
+    audioFormat.setSampleFormat(QAudioFormat::Int16);
     if (!audioFormat.isValid()) {
         qDebug() << "audio format is not valid";
         return;
