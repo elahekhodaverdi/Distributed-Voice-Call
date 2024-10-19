@@ -10,6 +10,10 @@ class AudioInput : public QIODevice
     Q_OBJECT
 public:
     AudioInput();
+    ~AudioInput();
+
+Q_SIGNALS:
+    void AudioIsReady(QByteArray data);
 
 private:
     void handleStateChanged(QAudio::State newState);
