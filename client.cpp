@@ -17,6 +17,7 @@ Client::Client(QObject *parent)
                             qDebug() << "MY ID is:  " << data;
                             mySocketId = data;
                         }));
+
     client.socket()->on("offer_sdp", sio::socket::event_listener([this](sio::event &ev) {
                             auto data = ev.get_message()->get_map();
                             QString fromClientId = QString::fromStdString(
@@ -25,6 +26,7 @@ Client::Client(QObject *parent)
                             qDebug() << "Message from client" << fromClientId << ":" << sdp;
                             Q_EMIT answerIsReadyToSend(fromClientId);
                         }));
+
     client.socket()->on("answer_sdp", sio::socket::event_listener([this](sio::event &ev) {
                             auto data = ev.get_message()->get_map();
                             QString fromClientId = QString::fromStdString(
@@ -35,7 +37,7 @@ Client::Client(QObject *parent)
 
     connect(this, &Client::answerIsReadyToSend, this, &Client::sendAnswer);
     connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
-    client.connect("http://localhost:3000");
+    client.connect("http://127.0.0.1:3000");
 }
 
 void Client::sendMessage(const QString &id)

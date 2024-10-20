@@ -17,7 +17,7 @@ AudioOutput::~AudioOutput(){
 
 void AudioOutput::setupDecoder(){
     int error;
-    int sampleRate = 8000;
+    int sampleRate = 48000;
     int channels = 1;
 
     decoder = opus_decoder_create(sampleRate, channels, &error);
@@ -30,7 +30,7 @@ void AudioOutput::setupDecoder(){
 
 void AudioOutput::setupAudio()
 {
-    audioFormat.setSampleRate(8000);
+    audioFormat.setSampleRate(48000);
     audioFormat.setChannelCount(1);
     audioFormat.setSampleFormat(QAudioFormat::Int16);
 
@@ -81,20 +81,20 @@ void AudioOutput::play(){
     QByteArray data = playQueue.front();
     qDebug() << "data size before decode: " << data.size();
 
-
-    playQueue.pop();
-    std::vector<opus_int16> decodedOutput(160);
+    std::vector<opus_int16> decodedOutput(960);
 
     int decodedBytes = opus_decode(decoder,
-                                     reinterpret_cast<const unsigned char*>(data.constData()),
+                                     reinterpret_cast<const unsigned char*>(data.data()),
                                      data.size(),
                                      decodedOutput.data(),
-                                     160,
-                                     0);
-   // qDebug() << "data size after decode" << decodedBytes;
+                                     960,
+                                     0) * 2;
+
+    qDebug() << "data size after decode" << decodedBytes;
     const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput.data());
 
-    ioDevice->write(outputToWrite);
+    ioDevice->write(outputToWrite, decodedBytes);
+    playQueue.pop();
     mutex.unlock();
 }
 

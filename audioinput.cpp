@@ -8,9 +8,9 @@
 AudioInput::AudioInput()
 {
     int error;
-    opusEncoder = opus_encoder_create(8000, 1, OPUS_APPLICATION_AUDIO, &error);
+    opusEncoder = opus_encoder_create(48000, 1, OPUS_APPLICATION_AUDIO, &error);
     QAudioFormat format;
-    format.setSampleRate(8000);
+    format.setSampleRate(48000);
     format.setChannelCount(1);
     format.setSampleFormat(QAudioFormat::Int16);
 
@@ -53,7 +53,7 @@ void AudioInput::handleStateChanged(QAudio::State newState)
 
 qint64 AudioInput::writeData(const char *data, qint64 len)
 {
-    std::vector<unsigned char> opusData(160);
+    std::vector<unsigned char> opusData(960);
     int frameSize = len / 2;
 
     qDebug() << "data size before encode" << len;
