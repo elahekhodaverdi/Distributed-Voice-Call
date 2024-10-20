@@ -79,6 +79,8 @@ void AudioOutput::addData(const QByteArray &data){
 void AudioOutput::play(){
     mutex.lock();
     QByteArray data = playQueue.front();
+    qDebug() << "data size before decode: " << data.size();
+
 
     playQueue.pop();
     opus_int16 decodedOutput[160];
@@ -89,9 +91,10 @@ void AudioOutput::play(){
                                      decodedOutput,
                                      160,
                                      0);
+    qDebug() << "data size after decode" << decodedBytes;
     const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput);
 
-    ioDevice->write(outputToWrite, decodedBytes);
+    ioDevice->write(outputToWrite);
     mutex.unlock();
 }
 
