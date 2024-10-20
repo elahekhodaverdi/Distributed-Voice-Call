@@ -29,10 +29,9 @@ Client::Client(QObject *parent)
                             auto data = ev.get_message()->get_map();
                             QString fromClientId = QString::fromStdString(
                                 data["from"]->get_string());
-                            QString message = QString::fromStdString(data["message"]->get_string());
+                            QString message = QString::fromStdString(data["sdp"]->get_string());
                             qDebug() << "Message from client" << fromClientId << ":" << message;
                         }));
-
 
     connect(this, &Client::answerIsReadyToSend, this, &Client::sendAnswer);
     connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
