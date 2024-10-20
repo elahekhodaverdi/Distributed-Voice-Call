@@ -2,6 +2,7 @@
 #include <QAudioFormat>
 #include <QDebug>
 #include <QMediaDevices>
+#include <vector>
 
 // #include <opus
 AudioInput::AudioInput()
@@ -52,7 +53,7 @@ void AudioInput::handleStateChanged(QAudio::State newState)
 
 qint64 AudioInput::writeData(const char *data, qint64 len)
 {
-    unsigned char opusData[80];
+    std::vector<unsigned char> opusData(160);
     int frameSize = len / 2;
 
     qDebug() << "data size before encode" << len;
@@ -62,15 +63,15 @@ qint64 AudioInput::writeData(const char *data, qint64 len)
     int encodedBytes = opus_encode(opusEncoder,
                                    reinterpret_cast<const opus_int16 *>(data),
                                    frameSize,
-                                   opusData,
-                                   80);
+                                   opusData.data(),
+                                   opusData.size());
 
     qDebug() << "data size after encode" << encodedBytes;
     if (len < 0) {
         return len;
     }
 
-    QByteArray encodedOpusData(reinterpret_cast<const char *>(opusData), encodedBytes);
+    QByteArray encodedOpusData(reinterpret_cast<const char *>(opusData.data()), encodedBytes);
     Q_EMIT AudioIsReady(encodedOpusData);
     return len;
 }

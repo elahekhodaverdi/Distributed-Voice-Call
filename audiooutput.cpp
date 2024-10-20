@@ -83,16 +83,16 @@ void AudioOutput::play(){
 
 
     playQueue.pop();
-    opus_int16 decodedOutput[160];
+    std::vector<opus_int16> decodedOutput(160);
 
     int decodedBytes = opus_decode(decoder,
                                      reinterpret_cast<const unsigned char*>(data.constData()),
                                      data.size(),
-                                     decodedOutput,
+                                     decodedOutput.data(),
                                      160,
                                      0);
-    qDebug() << "data size after decode" << decodedBytes;
-    const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput);
+   // qDebug() << "data size after decode" << decodedBytes;
+    const char* outputToWrite = reinterpret_cast<const char*>(decodedOutput.data());
 
     ioDevice->write(outputToWrite);
     mutex.unlock();
