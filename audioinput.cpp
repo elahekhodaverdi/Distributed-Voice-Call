@@ -6,8 +6,8 @@
 // #include <opus
 AudioInput::AudioInput()
 {
-    // int error;
-    // opusEncoder = opus_encoder_create(8000, 1, OPUS_APPLICATION_AUDIO, &error);
+    int error;
+    opusEncoder = opus_encoder_create(8000, 1, OPUS_APPLICATION_AUDIO, &error);
     QAudioFormat format;
     format.setSampleRate(8000);
     format.setChannelCount(1);
@@ -28,7 +28,7 @@ AudioInput::AudioInput()
 
 AudioInput::~AudioInput()
 {
-    // opus_encoder_destroy(opusEncoder);
+    opus_encoder_destroy(opusEncoder);
 }
 void AudioInput::handleStateChanged(QAudio::State newState)
 {
@@ -52,18 +52,19 @@ void AudioInput::handleStateChanged(QAudio::State newState)
 
 qint64 AudioInput::writeData(const char *data, qint64 len)
 {
-    // unsigned char opusData[4000];
-    // int frameSize = len / sizeof(opus_int16);
+    unsigned char opusData[4000];
+    int frameSize = len / sizeof(opus_int16);
 
-    // int encodedBytes = opus_encode(opusEncoder,
-    //                                reinterpret_cast<const opus_int16 *>(data),
-    //                                frameSize,
-    //                                opusData,
-    //                                sizeof(opusData));
+    int encodedBytes = opus_encode(opusEncoder,
+                                   reinterpret_cast<const opus_int16 *>(data),
+                                   frameSize,
+                                   opusData,
+                                   sizeof(opusData));
     if (len < 0) {
         return len;
     }
-    QByteArray encodedOpusData(data, len);
+
+    QByteArray encodedOpusData(reinterpret_cast<const char *>(opusData), encodedBytes);
     Q_EMIT AudioIsReady(encodedOpusData);
     return len;
 }

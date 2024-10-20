@@ -10,13 +10,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
     QGuiApplication app(argc, argv);
-    // AudioInput audioInput;
-    // AudioOutput audioOutput;
-    Client client;
-    // QObject::connect(&audioInput, &AudioInput::AudioIsReady, &audioOutput, &AudioOutput::addData);
+    AudioInput audioInput;
+    AudioOutput audioOutput;
+    //Client client;
+    QObject::connect(&audioInput, &AudioInput::AudioIsReady, &audioOutput, &AudioOutput::addData);
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("client", &client);
+    //engine.rootContext()->setContextProperty("client", &client);
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         &engine,
