@@ -161,17 +161,19 @@ void WebRTC::generateAnswerSDP(const QString &peerId)
 void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 {
     // Add an audio track to the peer connection
+    auto track = m_peerConnections[peerId]->addTrack(m_audio);
 
     // Handle track events
-
-    track->onMessage([this, peerId] (rtc::message_variant data) {
-
+    track->onMessage([this, peerId](rtc::message_variant data) {
+        QByteArray receivedData = readVariant(data);
+        Q_EMIT incommingPacket(peerId, receivedData, receivedData.size());
     });
 
-    track->onFrame([this] (rtc::binary frame, rtc::FrameInfo info) {
-
+    track->onFrame([this](rtc::binary frame, rtc::FrameInfo info) {
+        // Handle frame if needed
     });
 
+    m_peerTracks[peerId] = track;
 }
 
 // Sends audio track data to the peer
