@@ -69,13 +69,19 @@ void WebRTC::addPeer(const QString &peerId)
     // Create and add a new peer connection
     auto newPeer = std::make_shared<rtc::PeerConnection>(m_config);
     m_peerConnections.insert(peerId, newPeer);
-    // Set up a callback for when the local description is generated
 
+    // Set up a callback for when the local description is generated
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
-        Q_EMIT localDescriptionGenerated(peerId, QString::fromStdString(description.generateSdp()));
-    });
+        m_peerSdps[peerId] = description;
+        QString jsonDescription = descriptionToJson(description);
+        Q_EMIT localDescriptionGenerated(peerId, jsonDescription);
 
+        if (m_isOfferer)
+            Q_EMIT offerIsReady(peerId, jsonDescription);
+        else
+            Q_EMIT answerIsReady(peerId, jsonDescription);
+    });
 
 
     // Set up a callback for handling local ICE candidates
@@ -115,19 +121,26 @@ void WebRTC::addPeer(const QString &peerId)
     newPeer->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
         if (rtc::PeerConnection::GatheringState::Complete == state)
-            emit gatheringComplited(peerId);
+            Q_EMIT gatheringComplited(peerId);
     });
 
     // Set up a callback for handling incoming tracks
-    newPeer->onTrack([this, peerId] (std::shared_ptr<rtc::Track> track) {
+    newPeer->onTrack([this, peerId](std::shared_ptr<rtc::Track> track) {
         // handle the incoming media stream, emitting the incommingPacket signal if a stream is received
-        
+        m_peerTracks[peerId] = track;
+        track->onMessage([this, peerId](rtc::message_variant data) {
+            QByteArray receivedData = readVariant(data);
+            Q_EMIT incommingPacket(peerId, receivedData, receivedData.size());
+        });
     });
+
+
     // Add an audio track to the peer connection
-    rtc::Description::Audio audio = rtc::Description::Audio("audio",
-                                                            rtc::Description::Direction::SendRecv);
-    auto track = newPeer->addTrack(audio);
-    m_peerTracks.insert(peerId, track);
+    // rtc::Description::Audio audio = rtc::Description::Audio("audio",
+    //                                                         rtc::Description::Direction::SendRecv);
+    // auto track = newPeer->addTrack(audio);
+    // m_peerTracks.insert(peerId, track);
+    addAudioTrack(peerId, "audio");
 }
 
 // Set the local description for the peer's connection
@@ -140,6 +153,8 @@ void WebRTC::generateOfferSDP(const QString &peerId)
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
+    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
+    connection->setLocalDescription(rtc::Description::Type::Answer);
 }
 
 // Add an audio track to the peer connection
