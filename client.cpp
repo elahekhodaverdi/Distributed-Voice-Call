@@ -25,6 +25,10 @@ Client::Client(QObject *parent)
                                 data["from"]->get_string());
                             QString sdp = QString::fromStdString(data["sdp"]->get_string());
                             qDebug() << "Message from client" << fromClientId << ":" << sdp;
+                            if (m_newSdp != sdp) {
+                                m_newSdp = sdp;
+                                Q_EMIT newSdpReceived();
+                            }
                             Q_EMIT answerIsReadyToSend(fromClientId);
                         }));
 
@@ -32,8 +36,12 @@ Client::Client(QObject *parent)
                             auto data = ev.get_message()->get_map();
                             QString fromClientId = QString::fromStdString(
                                 data["from"]->get_string());
-                            QString message = QString::fromStdString(data["sdp"]->get_string());
-                            qDebug() << "Message from client" << fromClientId << ":" << message;
+                            QString sdp = QString::fromStdString(data["sdp"]->get_string());
+                            qDebug() << "Message from client" << fromClientId << ":" << sdp;
+                            if (m_newSdp != sdp) {
+                                m_newSdp = sdp;
+                                Q_EMIT newSdpReceived();
+                            }
                         }));
 
     connect(this, &Client::answerIsReadyToSend, this, &Client::sendAnswer);

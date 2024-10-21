@@ -36,8 +36,12 @@ Window {
                 Layout.preferredHeight: 40
             }
             Label {
-                text: "My ID: " + client.mySocketId  // Display the client's ID
+                text: "My ID: " + client.mySocketId
                 Layout.fillWidth: true
+                Layout.preferredHeight: 40
+            }
+            Label {
+                text: "Latest sdp: " + client.newSdp
                 Layout.preferredHeight: 40
             }
         }
@@ -70,7 +74,7 @@ Window {
 
             onClicked: {
                 pushed = !pushed
-                if(pushed){
+                if (pushed) {
                     Material.background = "red"
                     text = "End Call"
                     client.sendMessage(textfield.text)
