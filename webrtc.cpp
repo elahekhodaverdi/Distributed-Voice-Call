@@ -1,6 +1,7 @@
 #include "webrtc.h"
 #include <QtEndian>
 #include <QJsonDocument>
+#include <QJsonObject>
 
 static_assert(true);
 
@@ -177,17 +178,33 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 }
 
 // Sends audio track data to the peer
-
 void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 {
 
-        // Create the RTP header and initialize an RtpHeader struct
+    // Create the RTP header and initialize an RtpHeader struct
+    RtpHeader header;
+    header.first = 0x80; // RTP version 2
+    header.marker = 0;
+    header.payloadType = m_payloadType;
+    header.sequenceNumber = qToBigEndian(m_sequenceNumber++);
+    header.timestamp = qToBigEndian(getCurrentTimestamp());
+    header.ssrc = qToBigEndian(m_ssrc);
 
 
     // Create the RTP packet by appending the RTP header and the payload buffer
+    QByteArray packet;
+    packet.append(reinterpret_cast<const char*>(&header), sizeof(RtpHeader));
+    packet.append(buffer);
 
 
     // Send the packet, catch and handle any errors that occur during sending
+    try {
+        if (m_peerTracks.contains(peerId)) {
+            m_peerTracks[peerId]->send(packet.toStdString());
+        }
+    } catch (const std::exception& e) {
+        qWarning() << "Failed to send track data:" << e.what();
+    }
 
 }
 
@@ -201,18 +218,24 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 // Set the remote SDP description for the peer that contains metadata about the media being transmitted
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
-    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
-    QJsonDocument doc = QJsonDocument::fromJson(sdp.toUtf8());
-    QString type = jsonObj.value("type").toString();
-    QString sdpValue = jsonObj.value("sdp").toString();
-    connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
+    // Set the remote SDP description for the peer that contains metadata about the media being transmitted
+    if (m_peerConnections.contains(peerID))
+    {
+        std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
+        QJsonDocument doc = QJsonDocument::fromJson(sdp.toUtf8());
+        QJsonObject jsonObj = doc.object();
+        QString type = jsonObj.value("type").toString();
+        QString sdpValue = jsonObj.value("sdp").toString();
+        connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
+    }
 }
 
 // Add remote ICE candidates to the peer connection
 void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
 {
-    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
-    connection->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
+    if (m_peerConnections.contains(peerID)) {
+        m_peerConnections[peerID]->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
+    }
 }
 
 
