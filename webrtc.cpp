@@ -46,14 +46,22 @@ void WebRTC::init(const QString &id, bool isOfferer)
 {
     // Initialize WebRTC using libdatachannel library
     rtc::InitLogger(rtc::LogLevel::Info, NULL);
+
     // Create an instance of rtc::Configuration to Set up ICE configuration
     rtc::Configuration config;
-    config.iceServers.emplace_back("stun:stun.l.google.com:19302");
+
     // Add a STUN server to help peers find their public IP addresses
-    m_config = config;
+    config.iceServers.emplace_back("stun:stun.l.google.com:19302");
+
     // Add a TURN server for relaying media if a direct connection can't be established
+    // m_config.iceServers.emplace_back("turn:your_turn_server.com", "username", "password");
+
+    m_config = config;
 
     // Set up the audio stream configuration
+    m_audio.setBitrate(m_bitRate);
+    m_audio.addSSRC(m_ssrc, "video-send");
+    m_audio.addOpusCodec(m_payloadType);
 }
 
 void WebRTC::addPeer(const QString &peerId)
@@ -65,7 +73,7 @@ void WebRTC::addPeer(const QString &peerId)
 
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
-        emit localDescriptionGenerated(peerId, QString::fromStdString(description.generateSdp()));
+        Q_EMIT localDescriptionGenerated(peerId, QString::fromStdString(description.generateSdp()));
     });
 
 
@@ -73,7 +81,7 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for handling local ICE candidates
     newPeer->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
         // Emit the local candidates using the localCandidateGenerated signal
-        emit localCandidateGenerated(peerId,
+        Q_EMIT localCandidateGenerated(peerId,
                                      QString::fromStdString(candidate.candidate()),
                                      QString::fromStdString(candidate.mid()));
     });
