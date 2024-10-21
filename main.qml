@@ -8,11 +8,11 @@ Window {
     visible: true
     title: qsTr("CA1")
 
-    Item{
+    Item {
         anchors.fill: parent
 
         ColumnLayout {
-            anchors{
+            anchors {
                 top: parent.top
                 left: parent.left
                 right: parent.right
@@ -20,24 +20,29 @@ Window {
                 margins: 20
             }
 
-            Label{
+            Label {
                 text: "Ip: " + "172.16.142.176"
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
             }
-            Label{
+            Label {
                 text: "IceCandidate: " + "172.16.142.176"
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
             }
-            Label{
+            Label {
                 text: "CallerId: " + textfield.text
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
+            }
+            Label {
+                text: "My ID: " + client.mySocketId  // Display the client's ID
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
             }
         }
 
-        TextField{
+        TextField {
             id: textfield
             placeholderText: "Phone Number"
             anchors.bottom: callbtn.top
@@ -47,7 +52,7 @@ Window {
             enabled: !callbtn.pushed
         }
 
-        Button{
+        Button {
             id: callbtn
 
             property bool pushed: false
@@ -56,7 +61,7 @@ Window {
             text: "Call"
             Material.background: "green"
             Material.foreground: "white"
-            anchors{
+            anchors {
                 bottom: parent.bottom
                 left: parent.left
                 right: parent.right

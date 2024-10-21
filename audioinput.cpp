@@ -56,17 +56,12 @@ qint64 AudioInput::writeData(const char *data, qint64 len)
     std::vector<unsigned char> opusData(960);
     int frameSize = len / 2;
 
-    qDebug() << "data size before encode" << len;
-
-
-
     int encodedBytes = opus_encode(opusEncoder,
                                    reinterpret_cast<const opus_int16 *>(data),
                                    frameSize,
                                    opusData.data(),
                                    opusData.size());
 
-    qDebug() << "data size after encode" << encodedBytes;
     if (len < 0) {
         return len;
     }

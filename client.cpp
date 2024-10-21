@@ -9,13 +9,14 @@ Client::Client(QObject *parent)
     : QObject(parent)
 {
 
-
-
-
     client.socket()->on("your_id", sio::socket::event_listener([this](sio::event &ev) {
                             QString data = QString::fromStdString(ev.get_message()->get_string());
                             qDebug() << "MY ID is:  " << data;
-                            mySocketId = data;
+
+                            if (m_mySocketId != data) {
+                                m_mySocketId = data;
+                                Q_EMIT mySocketIdChanged();
+                            }
                         }));
 
     client.socket()->on("offer_sdp", sio::socket::event_listener([this](sio::event &ev) {
