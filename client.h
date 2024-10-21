@@ -29,7 +29,7 @@ public Q_SLOTS:
 
 private:
     QString m_mySocketId;
-    QString m_newSdp = "agha ali";
+    QString m_newSdp;
     sio::client client;
 };
 
