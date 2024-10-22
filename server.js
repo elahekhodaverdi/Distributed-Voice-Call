@@ -3,10 +3,10 @@ const io = require('socket.io')(3000);
 const clients = {};
 
 function handle_sdp_messages(socket, data, type){
+    data = JSON.parse(data);
     console.log("new offer sdp msg")
     const targetClientId = data.targetClientId;
     const sdp = data.sdp;
-
     if (clients[targetClientId]) {
         clients[targetClientId].emit(type + '_sdp', {
             from: socket.id,

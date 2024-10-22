@@ -24,7 +24,6 @@ Client::Client(QObject *parent)
                             QString fromClientId = QString::fromStdString(
                                 data["from"]->get_string());
                             QString sdp = QString::fromStdString(data["sdp"]->get_string());
-                            qDebug() << "Message from client" << fromClientId << ":" << sdp;
                             if (m_newSdp != sdp) {
                                 m_newSdp = sdp;
                                 Q_EMIT newSdpReceived();
@@ -37,7 +36,6 @@ Client::Client(QObject *parent)
                             QString fromClientId = QString::fromStdString(
                                 data["from"]->get_string());
                             QString sdp = QString::fromStdString(data["sdp"]->get_string());
-                            qDebug() << "Message from client" << fromClientId << ":" << sdp;
                             if (m_newSdp != sdp) {
                                 m_newSdp = sdp;
                                 Q_EMIT newSdpReceived();
