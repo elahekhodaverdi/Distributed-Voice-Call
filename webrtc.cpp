@@ -63,6 +63,9 @@ void WebRTC::init(const QString &id, bool isOfferer)
     m_audio.setBitrate(m_bitRate);
     m_audio.addSSRC(m_ssrc, "audio-send");
     m_audio.addOpusCodec(m_payloadType);
+
+    m_isOfferer = isOfferer;
+    m_localId = id;
 }
 
 void WebRTC::addPeer(const QString &peerId)
@@ -226,6 +229,7 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
         QJsonObject jsonObj = doc.object();
         QString type = jsonObj.value("type").toString();
         QString sdpValue = jsonObj.value("sdp").toString();
+        m_isOfferer = (type == "offer");
         connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
     }
 }

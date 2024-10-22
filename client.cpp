@@ -47,28 +47,28 @@ Client::Client(QObject *parent)
     client.connect("http://127.0.0.1:3000");
 }
 
-void Client::sendMessage(const QString &id)
+void Client::sendMessage(const QString &id, const QString &sdp)
 {
     qDebug() << "send message";
     Q_EMIT offerIsReadyToSend(id);
 }
 
-void Client::sendOffer(const QString & id)
+void Client::sendOffer(const QString & id, const QString &sdp)
 {
     qDebug() << "send Offer";
     QJsonObject msg;
     msg["targetClientId"] = id;
-    msg["sdp"] = "elahe";
+    msg["sdp"] = sdp;
     std::string sdpJson = QString(QJsonDocument(msg).toJson(QJsonDocument::Compact)).toStdString();
     client.socket()->emit("offer_sdp", sio::message::list(sdpJson));
 }
 
-void Client::sendAnswer(const QString & id)
+void Client::sendAnswer(const QString & id, const QString &sdp)
 {
     qDebug() << "send Answer";
     QJsonObject msg;
     msg["targetClientId"] = id;
-    msg["sdp"] = "ali";
+    msg["sdp"] = sdp;
     std::string sdpJson = QString(QJsonDocument(msg).toJson(QJsonDocument::Compact)).toStdString();
     client.socket()->emit("answer_sdp", sio::message::list(sdpJson));
 }

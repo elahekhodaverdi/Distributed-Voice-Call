@@ -21,11 +21,12 @@ Q_SIGNALS:
     void newSdpReceived();
     void offerIsReadyToSend(const QString &id);
     void answerIsReadyToSend(const QString &id);
+    void localIdIsSet(const QString &id, const QString &sdp);
 
 public Q_SLOTS:
-    void sendMessage(const QString &id);
-    void sendOffer(const QString &id);
-    void sendAnswer(const QString &id);
+    void sendMessage(const QString &id, const QString &sdp);
+    void sendOffer(const QString &id, const QString &sdp);
+    void sendAnswer(const QString &id, const QString &sdp);
 
 private:
     QString m_mySocketId;
