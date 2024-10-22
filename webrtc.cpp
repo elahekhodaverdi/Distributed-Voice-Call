@@ -21,7 +21,7 @@ WebRTC::WebRTC(QObject *parent)
     : QObject{parent},
     m_audio("Audio")
 {
-    connect(this, &WebRTC::gatheringComplited, [this] (const QString &peerID) {
+    connect(this, &WebRTC::gatheringCompleted, [this] (const QString &peerID) {
 
         m_localDescription = descriptionToJson(m_peerConnections[peerID]->localDescription().value());
         Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
@@ -61,7 +61,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
 
     // Set up the audio stream configuration
     m_audio.setBitrate(m_bitRate);
-    m_audio.addSSRC(m_ssrc, "video-send");
+    m_audio.addSSRC(m_ssrc, "audio-send");
     m_audio.addOpusCodec(m_payloadType);
 }
 
@@ -94,7 +94,6 @@ void WebRTC::addPeer(const QString &peerId)
     });
 
 
-
     // Set up a callback for when the state of the peer connection changes
     newPeer->onStateChange([this, peerId](rtc::PeerConnection::State state) {
         // Handle different states like New, Connecting, Connected, Disconnected, etc.
@@ -122,7 +121,7 @@ void WebRTC::addPeer(const QString &peerId)
     newPeer->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
         if (rtc::PeerConnection::GatheringState::Complete == state)
-            Q_EMIT gatheringComplited(peerId);
+            Q_EMIT gatheringCompleted(peerId);
     });
 
     // Set up a callback for handling incoming tracks
@@ -154,6 +153,7 @@ void WebRTC::generateOfferSDP(const QString &peerId)
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
+
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     connection->setLocalDescription(rtc::Description::Type::Answer);
 }

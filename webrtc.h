@@ -51,7 +51,7 @@ Q_SIGNALS:
 
     void isOffererChanged();
 
-    void gatheringComplited(const QString &peerID);
+    void gatheringCompleted(const QString &peerID);
 
     void offerIsReady(const QString &peerID, const QString& description);
 
