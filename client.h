@@ -22,6 +22,8 @@ Q_SIGNALS:
     void offerIsReadyToSend(const QString &id);
     void answerIsReadyToSend(const QString &id);
     void localIdIsSet(const QString &id, const QString &sdp);
+    void newIceCandidateReceived(const QString &id, const QString &candidate, const QString &mid);
+    void sendIceCandidate(const QString &id, const QString &candidate, const QString &mid);
 
 public Q_SLOTS:
     void sendMessage(const QString &id, const QString &sdp);
