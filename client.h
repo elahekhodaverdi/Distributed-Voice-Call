@@ -18,10 +18,10 @@ public:
 
 Q_SIGNALS:
     void mySocketIdChanged();
-    void newSdpReceived();
-    void offerIsReadyToSend(const QString &id);
-    void answerIsReadyToSend(const QString &id);
-    void localIdIsSet(const QString &id, const QString &sdp);
+    void newSdpReceived(const QString &peerID, const QString &sdp);
+    void offerIsReadyToSend(const QString &id, const QString &sdp);
+    void answerIsReadyToSend(const QString &id,  const QString &sdp);
+    void localIdIsSet(const QString &id, bool is_offerer);
     void newIceCandidateReceived(const QString &id, const QString &candidate, const QString &mid);
     void sendIceCandidate(const QString &id, const QString &candidate, const QString &mid);
 
