@@ -26,9 +26,9 @@ Client::Client(QObject *parent)
                             QString sdp = QString::fromStdString(data["sdp"]->get_string());
                             if (m_newSdp != sdp) {
                                 m_newSdp = sdp;
-                                Q_EMIT newSdpReceived();
+                                Q_EMIT newSdpReceived(fromClientId, sdp);
                             }
-                            Q_EMIT answerIsReadyToSend(fromClientId);
+                            Q_EMIT answerIsReadyToSend(fromClientId, sdp);
                         }));
 
     client.socket()->on("answer_sdp", sio::socket::event_listener([this](sio::event &ev) {
@@ -38,7 +38,7 @@ Client::Client(QObject *parent)
                             QString sdp = QString::fromStdString(data["sdp"]->get_string());
                             if (m_newSdp != sdp) {
                                 m_newSdp = sdp;
-                                Q_EMIT newSdpReceived();
+                                Q_EMIT newSdpReceived(fromClientId, sdp);
                             }
                         }));
 
@@ -50,7 +50,7 @@ Client::Client(QObject *parent)
 void Client::sendMessage(const QString &id, const QString &sdp)
 {
     qDebug() << "send message";
-    Q_EMIT offerIsReadyToSend(id);
+    Q_EMIT offerIsReadyToSend(id, sdp);
 }
 
 void Client::sendOffer(const QString & id, const QString &sdp)
