@@ -46,7 +46,6 @@ io.on('connection', (socket) => {
     socket.on('answer_sdp', (data) => handle_sdp_messages(socket, data, "answer"));
 
     socket.on("send_ice", (data) => handle_ice_messages(socket, data));
-    }
 
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
