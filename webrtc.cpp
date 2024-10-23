@@ -77,7 +77,7 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for when the local description is generated
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
-        m_peerSdps[peerId] = description;
+        // m_peerSdps[peerId] = description;
         QString jsonDescription = descriptionToJson(description);
         Q_EMIT localDescriptionGenerated(peerId, jsonDescription);
 
