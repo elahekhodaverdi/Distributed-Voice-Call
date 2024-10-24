@@ -11,10 +11,9 @@ class AudioInput : public QIODevice
 public:
     AudioInput();
     ~AudioInput();
+    Q_INVOKABLE void start();
+    Q_INVOKABLE void stop();
 
-public Q_SLOTS:
-    void start();
-    void stop();
 
 Q_SIGNALS:
     void AudioIsReady(const QByteArray &data);

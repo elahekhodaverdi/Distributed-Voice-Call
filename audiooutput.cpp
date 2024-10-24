@@ -39,12 +39,16 @@ void AudioOutput::setupAudio()
         qCritical() << "Failed to initialize audio sink!";
         return;
     }
-    connect(audioSink, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
-    ioDevice = audioSink->start();
+    //connect(audioSink, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
     if (!ioDevice) {
         qCritical() << "Failed to start audio output!";
         return;
     }
+}
+
+void AudioOutput::start(){
+    ioDevice = audioSink->start();
+    ioDevice->open(QIODevice::WriteOnly);
 }
 
 void AudioOutput::handleStateChanged(QAudio::State newState)

@@ -17,6 +17,7 @@ class AudioOutput : public QObject
 public:
     explicit AudioOutput(QObject *parent = nullptr);
     ~AudioOutput();
+    Q_INVOKABLE void start();
 
 public Q_SLOTS:
     void addData(const QByteArray &data);

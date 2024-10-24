@@ -1,15 +1,38 @@
 import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-import webrtc
+import Webrtc
+import Client
+import Audio
+
 Window {
     width: 280
     height: 520
     visible: true
     title: qsTr("CA1")
+
     WebRTC {
         id: webrtc
     }
+
+    Client{
+        id: client
+    }
+
+    AudioOutput {
+        id: output
+
+        Component.onCompleted: {
+            input.start();
+            output.start()
+        }
+    }
+
+    AudioInput{
+        id: input
+        onAudioIsReady: (barray) => output.addData(barray)
+    }
+
     Item {
         anchors.fill: parent
 
@@ -95,7 +118,7 @@ Window {
                     Material.background = "red"
                     text = "End Call"
                     // audioInput.start()
-                    client.sendMessage(textfield.text)
+                    webrtc.generateOfferSDP(textfield.text)
                 } else {
                     Material.background = "green"
                     text = "Call"
