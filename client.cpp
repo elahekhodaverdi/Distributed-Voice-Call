@@ -15,7 +15,7 @@ Client::Client(QObject *parent)
 
                             if (m_mySocketId != data) {
                                 m_mySocketId = data;
-                                Q_EMIT mySocketIdChanged();
+                                Q_EMIT localIdIsSet(data, false);
                             }
                         }));
 

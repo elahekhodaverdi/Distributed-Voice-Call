@@ -17,6 +17,11 @@ Window {
 
     Client{
         id: client
+
+        onLocalIdIsSet: (id, isOfferer) => {
+                            webrtc.init(id, isOfferer);
+                            myIdText.text = "My ID: " + id;
+                        }
     }
 
     AudioOutput {
@@ -70,7 +75,8 @@ Window {
                 font.pixelSize: 12 // Adjust the size as needed
             }
             TextEdit {
-                text: "My ID: " + client.mySocketId
+                id: myIdText
+                text: "My ID: "
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
                 readOnly: true

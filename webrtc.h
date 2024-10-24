@@ -16,6 +16,7 @@ public:
     virtual ~WebRTC();
 
     // Q_INVOKABLE void init(const QString &id, bool isOfferer = false);
+    Q_INVOKABLE void init(const QString &id, bool isOfferer = false);
     Q_INVOKABLE void addPeer(const QString &peerId);
     Q_INVOKABLE void generateOfferSDP(const QString &peerId);
     Q_INVOKABLE void generateAnswerSDP(const QString &peerId);
@@ -61,7 +62,6 @@ Q_SIGNALS:
     void bitRateChanged();
 
 public Q_SLOTS:
-    Q_INVOKABLE void init(const QString &id, bool isOfferer = false);
     void setRemoteDescription(const QString &peerID, const QString &sdp);
     void setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid);
 

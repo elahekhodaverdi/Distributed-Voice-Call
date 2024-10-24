@@ -7,7 +7,6 @@
 class Client : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString mySocketId READ mySocketId NOTIFY mySocketIdChanged)
     Q_PROPERTY(QString newSdp READ newSdp NOTIFY newSdpReceived)
 
 public:
@@ -17,7 +16,6 @@ public:
     QString newSdp() const { return m_newSdp; }
 
 Q_SIGNALS:
-    void mySocketIdChanged();
     void newSdpReceived(const QString &peerID, const QString &sdp);
     void offerIsReadyToSend(const QString &id, const QString &sdp);
     void answerIsReadyToSend(const QString &id,  const QString &sdp);
