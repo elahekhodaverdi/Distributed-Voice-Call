@@ -12,6 +12,10 @@ public:
     AudioInput();
     ~AudioInput();
 
+public Q_SLOTS:
+    void start();
+    void stop();
+
 Q_SIGNALS:
     void AudioIsReady(const QByteArray &data);
 

@@ -20,16 +20,13 @@ AudioInput::AudioInput()
         return;
     }
     connect(audio, &QAudioSource::stateChanged, this, &AudioInput::handleStateChanged);
-    if (!this->open(QIODeviceBase::ReadWrite)) {
-        qCritical() << "Failed to open QIODevice!";
-        return;
-    }
-    audio->start(this);
 }
 
 AudioInput::~AudioInput()
 {
     opus_encoder_destroy(opusEncoder);
+    this->close();
+    delete audio;
 }
 void AudioInput::handleStateChanged(QAudio::State newState)
 {
@@ -69,6 +66,20 @@ qint64 AudioInput::writeData(const char *data, qint64 len)
     QByteArray encodedOpusData(reinterpret_cast<const char *>(opusData.data()), encodedBytes);
     Q_EMIT AudioIsReady(encodedOpusData);
     return len;
+}
+
+void AudioInput::start()
+{
+    if (!this->open(QIODeviceBase::ReadWrite)) {
+        qCritical() << "Failed to open QIODevice!";
+        return;
+    }
+    audio->start(this);
+}
+void AudioInput::stop()
+{
+    audio->stop();
+    this->close();
 }
 
 qint64 AudioInput::readData(char *data, qint64 maxlen)
