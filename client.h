@@ -23,9 +23,9 @@ Q_SIGNALS:
     void answerIsReadyToSend(const QString &id,  const QString &sdp);
     void localIdIsSet(const QString &id, bool is_offerer);
     void newIceCandidateReceived(const QString &id, const QString &candidate, const QString &mid);
-    void sendIceCandidate(const QString &id, const QString &candidate, const QString &mid);
 
 public Q_SLOTS:
+    void sendIceCandidate(const QString &id, const QString &candidate, const QString &mid);
     void sendMessage(const QString &id, const QString &sdp);
     void sendOffer(const QString &id, const QString &sdp);
     void sendAnswer(const QString &id, const QString &sdp);
