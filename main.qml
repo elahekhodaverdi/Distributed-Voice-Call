@@ -77,12 +77,12 @@ Window {
                 if (pushed) {
                     Material.background = "red"
                     text = "End Call"
-                    audioInput.start()
-                    // client.sendMessage(textfield.text)
+                    // audioInput.start()
+                    client.sendMessage(textfield.text)
                 } else {
                     Material.background = "green"
                     text = "Call"
-                    audioInput.stop()
+                    // audioInput.stop()
                     textfield.clear()
                 }
             }
