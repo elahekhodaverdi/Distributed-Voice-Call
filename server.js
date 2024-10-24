@@ -24,7 +24,7 @@ function handle_ice_messages(socket, data){
     const candidate = data.candidate;
     const mid = data.mid;
     if (clients[targetClientId]) {
-        clients[targetClientId].emit(type + 'send_ice', {
+        clients[targetClientId].emit('send_ice', {
             from: socket.id,
             candidate: candidate,
             mid: mid
