@@ -16,7 +16,7 @@ public:
 
 
 Q_SIGNALS:
-    void AudioIsReady(const QByteArray &data);
+    void audioIsReady(const QByteArray &data);
 
 private:
     void handleStateChanged(QAudio::State newState);

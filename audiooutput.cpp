@@ -40,15 +40,16 @@ void AudioOutput::setupAudio()
         return;
     }
     //connect(audioSink, &QAudioSink::stateChanged, this, &AudioOutput::handleStateChanged);
-    if (!ioDevice) {
-        qCritical() << "Failed to start audio output!";
-        return;
-    }
+
 }
 
 void AudioOutput::start(){
     ioDevice = audioSink->start();
     ioDevice->open(QIODevice::WriteOnly);
+    if (!ioDevice) {
+        qCritical() << "Failed to start audio output!";
+        return;
+    }
 }
 
 void AudioOutput::handleStateChanged(QAudio::State newState)
