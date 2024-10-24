@@ -20,29 +20,44 @@ Window {
                 margins: 20
             }
 
-            Label {
+            TextEdit {
                 text: "Ip: " + "172.16.142.176"
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
+                readOnly: true
+                selectByMouse: true
+                font.pixelSize: 12 // Adjust the size as needed
             }
-            Label {
+            TextEdit {
                 text: "IceCandidate: " + "172.16.142.176"
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
+                readOnly: true
+                selectByMouse: true
+                font.pixelSize: 12 // Adjust the size as needed
             }
-            Label {
+            TextEdit {
                 text: "CallerId: " + textfield.text
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
+                readOnly: true
+                selectByMouse: true
+                font.pixelSize: 12 // Adjust the size as needed
             }
-            Label {
+            TextEdit {
                 text: "My ID: " + client.mySocketId
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
+                readOnly: true
+                selectByMouse: true
+                font.pixelSize: 12 // Adjust the size as needed
             }
-            Label {
+            TextEdit {
                 text: "Latest sdp: " + client.newSdp
                 Layout.preferredHeight: 40
+                readOnly: true
+                selectByMouse: true
+                font.pixelSize: 12 // Adjust the size as needed
             }
         }
 
