@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     QObject::connect(&webrtc, &WebRTC::localCandidateGenerated, &client, &Client::sendIceCandidate);
 
     QQmlApplicationEngine engine;
+    qmlRegisterType<WebRTC>("webrtc", 1, 0, "WebRTC");
     // engine.rootContext()->setContextProperty("audioInput", &audioInput);
     engine.rootContext()->setContextProperty("client", &client);
     const QUrl url(QStringLiteral("qrc:/main.qml"));

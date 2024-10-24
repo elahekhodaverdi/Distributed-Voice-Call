@@ -1,13 +1,15 @@
 import QtQuick
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-
+import webrtc
 Window {
     width: 280
     height: 520
     visible: true
     title: qsTr("CA1")
-
+    WebRTC {
+        id: webrtc
+    }
     Item {
         anchors.fill: parent
 

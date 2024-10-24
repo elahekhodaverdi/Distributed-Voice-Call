@@ -58,12 +58,6 @@ Client::Client(QObject *parent)
     client.connect("http://127.0.0.1:3000");
 }
 
-void Client::sendMessage(const QString &id, const QString &sdp)
-{
-    qDebug() << "send message";
-    Q_EMIT offerIsReadyToSend(id, sdp);
-}
-
 void Client::sendOffer(const QString &id, const QString &sdp)
 {
     qDebug() << "send Offer";

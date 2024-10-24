@@ -15,7 +15,7 @@ public:
     explicit WebRTC(QObject *parent = nullptr);
     virtual ~WebRTC();
 
-    //Q_INVOKABLE void init(const QString &id, bool isOfferer = false);
+    // Q_INVOKABLE void init(const QString &id, bool isOfferer = false);
     Q_INVOKABLE void addPeer(const QString &peerId);
     Q_INVOKABLE void generateOfferSDP(const QString &peerId);
     Q_INVOKABLE void generateAnswerSDP(const QString &peerId);
