@@ -73,6 +73,9 @@ void WebRTC::init(const QString &id, bool isOfferer)
 void WebRTC::addPeer(const QString &peerId)
 {
     qDebug() << "add peer";
+    if (m_peerTracks.contains(peerId)) {
+        return;
+    }
     // Create and add a new peer connection
     auto newPeer = std::make_shared<rtc::PeerConnection>(m_config);
     m_peerConnections.insert(peerId, newPeer);

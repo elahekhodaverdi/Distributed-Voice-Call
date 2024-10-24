@@ -34,7 +34,10 @@ Window {
 
         onNewIceCandidateReceived: (id, candidate, mid) => webrtc.setRemoteCandidate(id, candidate, mid)
 
-        onAnswerIsReadyToGenerate: (id) => webrtc.generateAnswerSDP(id);
+        onAnswerIsReadyToGenerate: (id) => {
+                                       webrtc.addPeer(id);
+                                       webrtc.generateAnswerSDP(id)
+                                   };
     }
 
     AudioOutput {
