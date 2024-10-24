@@ -4,7 +4,7 @@ const clients = {};
 
 function handle_sdp_messages(socket, data, type){
     data = JSON.parse(data);
-    console.log("new sdp msg")
+    console.log("new sdp msg" + data)
     const targetClientId = data.targetClientId;
     const sdp = data.sdp;
     if (clients[targetClientId]) {
@@ -20,7 +20,7 @@ function handle_sdp_messages(socket, data, type){
 function handle_ice_messages(socket, data){
     data = JSON.parse(data);
     const targetClientId = data.targetClientId;
-    console.log("new ice candidate msg from" + targetClientId);
+    console.log("new ice candidate msg " + data );
     const candidate = data.candidate;
     const mid = data.mid;
     if (clients[targetClientId]) {

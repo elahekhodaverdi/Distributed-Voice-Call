@@ -18,10 +18,11 @@ int main(int argc, char *argv[])
     // QObject::connect(&audioInput, &AudioInput::AudioIsReady, &audioOutput, &AudioOutput::addData);
 
     QObject::connect(&client, &Client::localIdIsSet, &webrtc, &WebRTC::init);
-    QObject::connect(&webrtc, &WebRTC::offerIsReady, &client, &Client::sendOffer);
-    QObject::connect(&webrtc, &WebRTC::answerIsReady, &client, &Client::sendAnswer);
     QObject::connect(&client, &Client::newSdpReceived, &webrtc, &WebRTC::setRemoteDescription);
     QObject::connect(&client, &Client::newIceCandidateReceived, &webrtc, &WebRTC::setRemoteCandidate);
+
+    QObject::connect(&webrtc, &WebRTC::offerIsReady, &client, &Client::sendOffer);
+    QObject::connect(&webrtc, &WebRTC::answerIsReady, &client, &Client::sendAnswer);
     QObject::connect(&webrtc, &WebRTC::localCandidateGenerated, &client, &Client::sendIceCandidate);
 
     QQmlApplicationEngine engine;
