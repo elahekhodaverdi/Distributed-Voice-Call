@@ -13,6 +13,13 @@ Window {
 
     WebRTC {
         id: webrtc
+
+        onOfferIsReady: (peerId, description) => client.sendOffer(peerId, description);
+
+        onAnswerIsReady: (peerId, description) => client.sendAnswer(peerId, description);
+
+        onLocalCandidateGenerated: (id, candidate, mid) => client.sendIceCandidate(id, candidate, mid);
+
     }
 
     Client{
@@ -22,6 +29,12 @@ Window {
                             webrtc.init(id, isOfferer);
                             myIdText.text = "My ID: " + id;
                         }
+
+        onNewSdpReceived: (id, description) => webrtc.setRemoteDescription(id, description);
+
+        onNewIceCandidateReceived: (id, candidate, mid) => webrtc.setRemoteCandidate(id, candidate, mid)
+
+        onAnswerIsReadyToGenerate: (id) => webrtc.generateAnswerSDP(id);
     }
 
     AudioOutput {
@@ -124,6 +137,7 @@ Window {
                     Material.background = "red"
                     text = "End Call"
                     // audioInput.start()
+                    webrtc.addPeer(textfield.text)
                     webrtc.generateOfferSDP(textfield.text)
                 } else {
                     Material.background = "green"

@@ -3,8 +3,8 @@ const io = require('socket.io')(3000);
 const clients = {};
 
 function handle_sdp_messages(socket, data, type){
-    data = JSON.parse(data);
     console.log("new sdp msg" + data)
+    data = JSON.parse(data);
     const targetClientId = data.targetClientId;
     const sdp = data.sdp;
     if (clients[targetClientId]) {
@@ -18,9 +18,9 @@ function handle_sdp_messages(socket, data, type){
 }
 
 function handle_ice_messages(socket, data){
+    console.log("new ice candidate msg " + data );
     data = JSON.parse(data);
     const targetClientId = data.targetClientId;
-    console.log("new ice candidate msg " + data );
     const candidate = data.candidate;
     const mid = data.mid;
     if (clients[targetClientId]) {

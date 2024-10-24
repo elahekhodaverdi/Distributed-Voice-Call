@@ -28,7 +28,8 @@ Client::Client(QObject *parent)
                                 m_newSdp = sdp;
                                 Q_EMIT newSdpReceived(fromClientId, sdp);
                             }
-                            Q_EMIT answerIsReadyToSend(fromClientId, sdp);
+                            Q_EMIT answerIsReadyToGenerate(fromClientId);
+
                         }));
 
     client.socket()->on("answer_sdp", sio::socket::event_listener([this](sio::event &ev) {
@@ -53,8 +54,7 @@ Client::Client(QObject *parent)
                             Q_EMIT newIceCandidateReceived(fromClientId, candidate, mid);
                         }));
 
-    connect(this, &Client::answerIsReadyToSend, this, &Client::sendAnswer);
-    connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
+    //connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
     client.connect("http://127.0.0.1:3000");
 }
 

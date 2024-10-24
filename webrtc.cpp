@@ -81,6 +81,7 @@ void WebRTC::addPeer(const QString &peerId)
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
         // m_peerSdps[peerId] = description;
+        qDebug() << "on local description...";
         QString jsonDescription = descriptionToJson(description);
         Q_EMIT localDescriptionGenerated(peerId, jsonDescription);
 
@@ -156,6 +157,7 @@ void WebRTC::addPeer(const QString &peerId)
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
     qDebug() << "generate offer";
+    setIsOfferer(true);
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     connection->setLocalDescription(rtc::Description::Type::Offer);
 }
@@ -163,9 +165,12 @@ void WebRTC::generateOfferSDP(const QString &peerId)
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
-    qDebug() << "generate answer" ;
+    qDebug() << "generate answer 1" ;
+    setIsOfferer(false);
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
+    qDebug() << "generate answer 2" ;
     connection->setLocalDescription(rtc::Description::Type::Answer);
+    qDebug() << "generate answer 3" ;
 }
 
 // Add an audio track to the peer connection
@@ -239,7 +244,7 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
         QJsonObject jsonObj = doc.object();
         QString type = jsonObj.value("type").toString();
         QString sdpValue = jsonObj.value("sdp").toString();
-        m_isOfferer = (type == "offer");
+        m_isOfferer = (type != "offer");
         connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
     }
 }
