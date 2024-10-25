@@ -14,6 +14,15 @@ This class inherits from `QIODevice`, an abstract class in Qt that is used for h
 - **`audio`**: A pointer to the `QAudioSource`, used to capture audio from the input device.
 - **`opusEncoder`**: A pointer to the Opus encoder, which is used to encode the raw audio data before writing it.
 
+### Signals
+
+```cpp
+    void audioIsReady(const QByteArray &data);
+```
+
+This signal is emitted whenever a new chunk of encoded audio data is available.
+ It sends the encoded audio as a QByteArray , which can be easily handled or sent across the network.
+
 ### Constructor
 
 We initialize the audio source with a custom format and set up the encoder. The sample rate for both the encoder and the audio source is set to 48 kHz, as this is commonly supported by most audio hardware (e.g., microphones, sound cards, and my own setup).
