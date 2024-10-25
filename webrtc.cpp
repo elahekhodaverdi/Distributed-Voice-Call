@@ -24,9 +24,10 @@ WebRTC::WebRTC(QObject *parent)
     qDebug() << "constructor";
     connect(this, &WebRTC::gatheringCompleted, [this] (const QString &peerID) {
         qDebug() << "gathering completed 1";
+        m_gatheringCompleted = true;
         m_localDescription = descriptionToJson(m_peerConnections[peerID]->localDescription().value());
         Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
-
+        qDebug() << "im offerer? : " << m_isOfferer;
         if (m_isOfferer)
             Q_EMIT this->offerIsReady(peerID, m_localDescription);
         else
@@ -48,7 +49,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
 {
     qDebug() << "init";
     // Initialize WebRTC using libdatachannel library
-    rtc::InitLogger(rtc::LogLevel::Info, NULL);
+    rtc::InitLogger(rtc::LogLevel::Debug, NULL);
 
     // Create an instance of rtc::Configuration to Set up ICE configuration
     rtc::Configuration config;
@@ -83,11 +84,12 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for when the local description is generated
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
-        // m_peerSdps[peerId] = description;
-        qDebug() << "on local description...";
+        auto typeString = QString::fromStdString(description.typeString());
+        auto sdp = QString::fromStdString(description);
+        m_isOfferer = (typeString == "offer");
+        qDebug() << "onlocaldescription: " << typeString <<  "    :  " << m_isOfferer;
         QString jsonDescription = descriptionToJson(description);
         Q_EMIT localDescriptionGenerated(peerId, jsonDescription);
-
         if (m_isOfferer)
             Q_EMIT offerIsReady(peerId, jsonDescription);
         else
@@ -114,6 +116,7 @@ void WebRTC::addPeer(const QString &peerId)
         case rtc::PeerConnection::State::Connecting:
             break;
         case rtc::PeerConnection::State::Connected:
+            qDebug() << "finally connected";
             break;
         case rtc::PeerConnection::State::Disconnected:
             break;
@@ -172,7 +175,7 @@ void WebRTC::generateAnswerSDP(const QString &peerId)
     setIsOfferer(false);
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     qDebug() << "generate answer 2" ;
-    connection->setLocalDescription(rtc::Description::Type::Answer);
+    connection->setLocalDescription();
     qDebug() << "generate answer 3" ;
 }
 
@@ -288,7 +291,6 @@ QByteArray WebRTC::readVariant(const rtc::message_variant &data)
 // Utility function to convert rtc::Description to JSON format
 QString WebRTC::descriptionToJson(const rtc::Description &description)
 {
-    qDebug() << "description to json";
     auto temp = QString("{\"type\": \"%1\", \"sdp\": \"%2\"}");
     auto typeString = QString::fromStdString(description.typeString());
     auto sdp = QString::fromStdString(description);

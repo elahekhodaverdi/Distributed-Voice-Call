@@ -80,7 +80,7 @@ private:
 private:
     static inline uint16_t                              m_sequenceNumber = 0;
     static inline uint32_t                              m_instanceCounter = 0;
-    bool                                                m_gatheringComplited = false;
+    bool                                                m_gatheringCompleted = false;
     int                                                 m_bitRate = 48000;
     int                                                 m_payloadType = 111;
     rtc::Description::Audio                             m_audio;

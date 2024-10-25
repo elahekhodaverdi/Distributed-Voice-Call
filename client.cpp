@@ -12,7 +12,6 @@ Client::Client(QObject *parent)
     client.socket()->on("your_id", sio::socket::event_listener([this](sio::event &ev) {
                             QString data = QString::fromStdString(ev.get_message()->get_string());
                             qDebug() << "MY ID is:  " << data;
-
                             if (m_mySocketId != data) {
                                 m_mySocketId = data;
                                 Q_EMIT localIdIsSet(data, false);
@@ -54,7 +53,6 @@ Client::Client(QObject *parent)
                             Q_EMIT newIceCandidateReceived(fromClientId, candidate, mid);
                         }));
 
-    //connect(this, &Client::offerIsReadyToSend, this, &Client::sendOffer);
     client.connect("http://127.0.0.1:3000");
 }
 
