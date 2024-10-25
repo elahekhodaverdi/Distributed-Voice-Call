@@ -30,14 +30,14 @@ Window {
                             myIdText.text = "My ID: " + id;
                         }
 
-        onNewSdpReceived: (id, description) => webrtc.setRemoteDescription(id, description);
+        onNewSdpReceived: (id, description) => {
+                              webrtc.addPeer(id);
+                              webrtc.setRemoteDescription(id, description)
+                          };
 
         onNewIceCandidateReceived: (id, candidate, mid) => webrtc.setRemoteCandidate(id, candidate, mid)
 
-        onAnswerIsReadyToGenerate: (id) => {
-                                       webrtc.addPeer(id);
-                                       webrtc.generateAnswerSDP(id)
-                                   };
+        onAnswerIsReadyToGenerate: (id) => webrtc.generateAnswerSDP(id)
     }
 
     AudioOutput {
