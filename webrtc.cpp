@@ -23,8 +23,9 @@ WebRTC::WebRTC(QObject *parent)
 {
     qDebug() << "constructor";
     connect(this, &WebRTC::gatheringCompleted, [this] (const QString &peerID) {
+        if (!m_gatheringCompleted) return;
+
         qDebug() << "gathering completed 1";
-        m_gatheringCompleted = true;
         m_localDescription = descriptionToJson(m_peerConnections[peerID]->localDescription().value());
         Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
         if (m_isOfferer)
@@ -82,23 +83,22 @@ void WebRTC::addPeer(const QString &peerId)
 
     // Set up a callback for when the local description is generated
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
+        if (m_gatheringCompleted) return;
+
         qDebug() << "onlocalsdp";
-        // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
+
         auto typeString = QString::fromStdString(description.typeString());
         auto sdp = QString::fromStdString(description);
         m_isOfferer = (typeString == "offer");
-        QString jsonDescription = descriptionToJson(description);
-        Q_EMIT localDescriptionGenerated(peerId, jsonDescription);
-        if (m_isOfferer)
-            Q_EMIT offerIsReady(peerId, jsonDescription);
-        else
-            Q_EMIT answerIsReady(peerId, jsonDescription);
+        m_localDescription = descriptionToJson(description);
+
     });
 
 
     // Set up a callback for handling local ICE candidates
     newPeer->onLocalCandidate([this, peerId](rtc::Candidate candidate) {
         // Emit the local candidates using the localCandidateGenerated signal
+        if (!m_gatheringCompleted) return;
         Q_EMIT localCandidateGenerated(peerId,
                                      QString::fromStdString(candidate.candidate()),
                                      QString::fromStdString(candidate.mid()));
@@ -135,6 +135,7 @@ void WebRTC::addPeer(const QString &peerId)
         // When the gathering is complete, emit the gatheringComplited signal
         if (rtc::PeerConnection::GatheringState::Complete == state) {
             qDebug() << "gathering completed 2";
+            m_gatheringCompleted = true;
             Q_EMIT gatheringCompleted(peerId);
         }
     });
@@ -144,8 +145,9 @@ void WebRTC::addPeer(const QString &peerId)
         // handle the incoming media stream, emitting the incommingPacket signal if a stream is received
         m_peerTracks[peerId] = track;
         track->onMessage([this, peerId](rtc::message_variant data) {
-            QByteArray receivedData = readVariant(data);
-            Q_EMIT incommingPacket(peerId, receivedData, receivedData.size());
+            qDebug() << "on message called in add peer";
+            // QByteArray receivedData = readVariant(data);
+            // Q_EMIT incommingPacket(peerId, receivedData, receivedData.size());
         });
     });
 
@@ -262,8 +264,13 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
 {
     qDebug() << "set remote candidate";
-    if (m_peerConnections.contains(peerID)) {
-        m_peerConnections[peerID]->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
+    try{
+        if (m_peerConnections.contains(peerID)) {
+            m_peerConnections[peerID]->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
+        }
+    }
+    catch (const std::exception& e) {
+        qWarning() << "Failed to set remote candidate" << e.what();
     }
 }
 
