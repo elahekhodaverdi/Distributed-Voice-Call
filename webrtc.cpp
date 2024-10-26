@@ -27,7 +27,6 @@ WebRTC::WebRTC(QObject *parent)
         m_gatheringCompleted = true;
         m_localDescription = descriptionToJson(m_peerConnections[peerID]->localDescription().value());
         Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
-        qDebug() << "im offerer? : " << m_isOfferer;
         if (m_isOfferer)
             Q_EMIT this->offerIsReady(peerID, m_localDescription);
         else
@@ -49,7 +48,7 @@ void WebRTC::init(const QString &id, bool isOfferer)
 {
     qDebug() << "init";
     // Initialize WebRTC using libdatachannel library
-    rtc::InitLogger(rtc::LogLevel::Debug, NULL);
+    rtc::InitLogger(rtc::LogLevel::Error, NULL);
 
     // Create an instance of rtc::Configuration to Set up ICE configuration
     rtc::Configuration config;
@@ -83,11 +82,11 @@ void WebRTC::addPeer(const QString &peerId)
 
     // Set up a callback for when the local description is generated
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
+        qDebug() << "onlocalsdp";
         // The local description should be emitted using the appropriate signals based on the peer's role (offerer or answerer)
         auto typeString = QString::fromStdString(description.typeString());
         auto sdp = QString::fromStdString(description);
         m_isOfferer = (typeString == "offer");
-        qDebug() << "onlocaldescription: " << typeString <<  "    :  " << m_isOfferer;
         QString jsonDescription = descriptionToJson(description);
         Q_EMIT localDescriptionGenerated(peerId, jsonDescription);
         if (m_isOfferer)
@@ -171,11 +170,13 @@ void WebRTC::generateOfferSDP(const QString &peerId)
 // Generate an answer SDP for the peer
 void WebRTC::generateAnswerSDP(const QString &peerId)
 {
-    qDebug() << "generate answer 1" ;
+    if (!m_peerConnections.contains(peerId))
+        addPeer(peerId);
     setIsOfferer(false);
+
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     qDebug() << "generate answer 2" ;
-    connection->setLocalDescription();
+    connection->localDescription()->generateSdp();
     qDebug() << "generate answer 3" ;
 }
 
@@ -251,8 +252,10 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
         QString type = jsonObj.value("type").toString();
         QString sdpValue = jsonObj.value("sdp").toString();
         m_isOfferer = (type != "offer");
+        qDebug() << "inside of set remote sdp" << type << ": " << sdpValue;
         connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
     }
+    qDebug() << "outside of set remote sdp";
 }
 
 // Add remote ICE candidates to the peer connection
