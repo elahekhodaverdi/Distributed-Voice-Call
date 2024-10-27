@@ -23,6 +23,9 @@ Window {
         onIncommingPacket: (id, data, len) => output.addData(data);
 
         onRtcConnected: () => {
+                            callbtn.pushed = true;
+                            callbtn.Material.background = "red"
+                            callbtn.text = "End Call"
                             input.start();
                             output.start();
                         }
@@ -106,13 +109,6 @@ Window {
                 selectByMouse: true
                 font.pixelSize: 12 // Adjust the size as needed
             }
-            TextEdit {
-                text: "Latest sdp: " + client.newSdp
-                Layout.preferredHeight: 40
-                readOnly: true
-                selectByMouse: true
-                font.pixelSize: 12 // Adjust the size as needed
-            }
         }
 
         TextField {
@@ -146,13 +142,11 @@ Window {
                 if (pushed) {
                     Material.background = "red"
                     text = "End Call"
-                    // audioInput.start()
                     webrtc.addPeer(textfield.text)
                     webrtc.generateOfferSDP(textfield.text)
                 } else {
                     Material.background = "green"
                     text = "Call"
-                    // audioInput.stop()
                     textfield.clear()
                 }
             }

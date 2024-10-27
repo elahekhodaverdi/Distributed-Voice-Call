@@ -126,7 +126,6 @@ void WebRTC::addPeer(const QString &peerId)
     newPeer->onGatheringStateChange([this, peerId](rtc::PeerConnection::GatheringState state) {
         // When the gathering is complete, emit the gatheringComplited signal
         if (rtc::PeerConnection::GatheringState::Complete == state) {
-            qDebug() << "gathering completed 2";
             m_gatheringCompleted = true;
             Q_EMIT gatheringCompleted(peerId);
         }
@@ -138,8 +137,6 @@ void WebRTC::addPeer(const QString &peerId)
         m_peerTracks[peerId] = track;
         track->onMessage([this, peerId](rtc::message_variant data) {
             qDebug() << "on message called in add peer";
-            // QByteArray receivedData = readVariant(data);
-            // Q_EMIT incommingPacket(peerId, receivedData, receivedData.size());
         });
     });
 
@@ -155,7 +152,6 @@ void WebRTC::addPeer(const QString &peerId)
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
-    qDebug() << "generate offer";
     setIsOfferer(true);
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     connection->setLocalDescription(rtc::Description::Type::Offer);
@@ -169,15 +165,12 @@ void WebRTC::generateAnswerSDP(const QString &peerId)
     setIsOfferer(false);
 
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
-    qDebug() << "generate answer 2" ;
     connection->localDescription()->generateSdp();
-    qDebug() << "generate answer 3" ;
 }
 
 // Add an audio track to the peer connection
 void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 {
-    qDebug() << "add audio track";
     // Add an audio track to the peer connection
     auto track = m_peerConnections[peerId]->addTrack(m_audio);
 
@@ -187,46 +180,12 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
         Q_EMIT incommingPacket(peerId, receivedData, receivedData.size());
     });
 
-    // track->onFrame([this](rtc::binary frame, rtc::FrameInfo info) {
-    //     // Handle frame if needed
-    // });
-
     m_peerTracks[peerId] = track;
 }
 
 // Sends audio track data to the peer
 void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 {
-    qDebug() << "send track" << peerId;
-
-    if (m_isOfferer){
-
-        QString filePath = "E:/elahe/git/CN_CA_1/sendtrack.txt";
-
-        // Create a QFile object
-        QFile file(filePath);
-
-        // Open the file in write mode (QIODevice::WriteOnly)
-        if (file.open(QIODevice::Append)) {
-            // Create a QTextStream to write text to the file
-            QTextStream out(&file);
-
-            // Write some text to the file
-            out << buffer.toHex();
-
-            // Optional: flush the stream (though it's automatically done on file close)
-            out.flush();
-
-            qDebug() << "Writing to file was successful!";
-        } else {
-            // Error handling if file cannot be opened
-            qDebug() << "Could not open file for writing:" << file.errorString();
-        }
-
-        // Close the file when done
-        file.close();
-    }
-
     // Create the RTP header and initialize an RtpHeader struct
     RtpHeader header;
     header.first = 0x80; // RTP version 2
@@ -264,7 +223,6 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 // Set the remote SDP description for the peer that contains metadata about the media being transmitted
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
-    qDebug() << "set remote sdp";
     // Set the remote SDP description for the peer that contains metadata about the media being transmitted
     if (m_peerConnections.contains(peerID))
     {
@@ -274,16 +232,13 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
         QString type = jsonObj.value("type").toString();
         QString sdpValue = jsonObj.value("sdp").toString();
         m_isOfferer = (type != "offer");
-        qDebug() << "inside of set remote sdp" << type << ": " << sdpValue;
         connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
     }
-    qDebug() << "outside of set remote sdp";
 }
 
 // Add remote ICE candidates to the peer connection
 void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
 {
-    qDebug() << "set remote candidate";
     try{
         if (m_peerConnections.contains(peerID)) {
             m_peerConnections[peerID]->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
@@ -306,7 +261,6 @@ void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate,
 QByteArray WebRTC::readVariant(const rtc::message_variant &data)
 {
     QByteArray resultData;
-    qDebug() << "first of read variant";
     if (std::holds_alternative<rtc::binary>(data)) {
         const rtc::binary &binData = std::get<rtc::binary>(data);
         resultData =  QByteArray(reinterpret_cast<const char *>(binData.data()),
