@@ -2,6 +2,7 @@
 #include <QtEndian>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QFile>
 
 static_assert(true);
 
@@ -116,6 +117,7 @@ void WebRTC::addPeer(const QString &peerId)
             break;
         case rtc::PeerConnection::State::Connected:
             qDebug() << "finally connected";
+            Q_EMIT rtcConnected();
             break;
         case rtc::PeerConnection::State::Disconnected:
             break;
@@ -195,9 +197,9 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
         Q_EMIT incommingPacket(peerId, receivedData, receivedData.size());
     });
 
-    track->onFrame([this](rtc::binary frame, rtc::FrameInfo info) {
-        // Handle frame if needed
-    });
+    // track->onFrame([this](rtc::binary frame, rtc::FrameInfo info) {
+    //     // Handle frame if needed
+    // });
 
     m_peerTracks[peerId] = track;
 }
@@ -205,7 +207,35 @@ void WebRTC::addAudioTrack(const QString &peerId, const QString &trackName)
 // Sends audio track data to the peer
 void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 {
-    qDebug() << "send track";
+    qDebug() << "send track" << peerId;
+
+    if (m_isOfferer){
+
+        QString filePath = "C:/Users/ALI/OneDrive/Desktop/university/Project/CN/CN_CA_1/sendtrack.txt";
+
+        // Create a QFile object
+        QFile file(filePath);
+
+        // Open the file in write mode (QIODevice::WriteOnly)
+        if (file.open(QIODevice::Append)) {
+            // Create a QTextStream to write text to the file
+            QTextStream out(&file);
+
+            // Write some text to the file
+            out << buffer.toHex();
+
+            // Optional: flush the stream (though it's automatically done on file close)
+            out.flush();
+
+            qDebug() << "Writing to file was successful!";
+        } else {
+            // Error handling if file cannot be opened
+            qDebug() << "Could not open file for writing:" << file.errorString();
+        }
+
+        // Close the file when done
+        file.close();
+    }
 
     // Create the RTP header and initialize an RtpHeader struct
     RtpHeader header;

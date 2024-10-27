@@ -61,6 +61,8 @@ Q_SIGNALS:
 
     void bitRateChanged();
 
+    void rtcConnected();
+
 public Q_SLOTS:
 
     void setRemoteDescription(const QString &peerID, const QString &sdp);

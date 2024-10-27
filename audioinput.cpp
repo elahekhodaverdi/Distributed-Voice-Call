@@ -74,6 +74,7 @@ void AudioInput::start()
         qCritical() << "Failed to open QIODevice!";
         return;
     }
+    qDebug() << "audio started";
     audio->start(this);
 }
 void AudioInput::stop()

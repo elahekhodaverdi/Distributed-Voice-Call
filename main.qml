@@ -20,6 +20,13 @@ Window {
 
         onLocalCandidateGenerated: (id, candidate, mid) => client.sendIceCandidate(id, candidate, mid);
 
+        onIncommingPacket: (id, data, len) => output.addData(data);
+
+        onRtcConnected: () => {
+                            input.start();
+                            output.start();
+                        }
+
     }
 
     Client{
@@ -37,21 +44,21 @@ Window {
 
         onNewIceCandidateReceived: (id, candidate, mid) => webrtc.setRemoteCandidate(id, candidate, mid)
 
-        onAnswerIsReadyToGenerate: (id) => webrtc.generateAnswerSDP(id)
+        onAnswerIsReadyToGenerate: (id) => {
+                                   textfield.text = id;
+                                   webrtc.generateAnswerSDP(id);
+                                   }
     }
 
     AudioOutput {
         id: output
 
-        Component.onCompleted: {
-            input.start();
-            output.start()
-        }
     }
 
     AudioInput{
         id: input
-        onAudioIsReady: (barray) => output.addData(barray)
+        onAudioIsReady: (data) => webrtc.sendTrack(textfield.text, data);
+
     }
 
     Item {

@@ -1,5 +1,6 @@
 #include "audiooutput.h"
 #include <QDebug>
+#include <QFile>
 
 AudioOutput::AudioOutput(QObject *parent)
     : QObject{parent}
@@ -76,6 +77,10 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
 
 void AudioOutput::addData(const QByteArray &data){
     mutex.lock();
+
+    qDebug() << data.toHex();
+
+    qDebug() << "Add data in audiooutput";
     playQueue.push(data);
     mutex.unlock();
     Q_EMIT newPacket();
