@@ -85,9 +85,6 @@ void WebRTC::addPeer(const QString &peerId)
     // Set up a callback for when the local description is generated
     newPeer->onLocalDescription([this, peerId](const rtc::Description &description) {
         if (m_gatheringCompleted) return;
-
-        qDebug() << "onlocalsdp";
-
         auto typeString = QString::fromStdString(description.typeString());
         auto sdp = QString::fromStdString(description);
         m_isOfferer = (typeString == "offer");
@@ -211,7 +208,7 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 
     if (m_isOfferer){
 
-        QString filePath = "C:/Users/ALI/OneDrive/Desktop/university/Project/CN/CN_CA_1/sendtrack.txt";
+        QString filePath = "E:/elahe/git/CN_CA_1/sendtrack.txt";
 
         // Create a QFile object
         QFile file(filePath);
@@ -315,17 +312,23 @@ void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate,
 // Utility function to read the rtc::message_variant into a QByteArray
 QByteArray WebRTC::readVariant(const rtc::message_variant &data)
 {
-    qDebug() << "read variant";
+    QByteArray resultData;
+    qDebug() << "first of read variant";
     if (std::holds_alternative<rtc::binary>(data)) {
         const rtc::binary &binData = std::get<rtc::binary>(data);
-        return QByteArray(reinterpret_cast<const char *>(binData.data()),
+        resultData =  QByteArray(reinterpret_cast<const char *>(binData.data()),
                           static_cast<int>(binData.size()));
 
     } else if (std::holds_alternative<std::string>(data)) {
         const std::string &strData = std::get<std::string>(data);
-        return QByteArray(strData.c_str(), static_cast<int>(strData.size()));
+        resultData =  QByteArray(strData.c_str(), static_cast<int>(strData.size()));
     }
-    return QByteArray();
+    qDebug() << resultData.size() << "second read variant" << resultData.toHex();
+    if (resultData.size())
+        resultData.remove(0, sizeof(RtpHeader));
+    qDebug() << sizeof(RtpHeader) << "dfdf      "<< resultData.size() << "third read variant" << resultData.toHex();
+
+    return resultData;
 }
 
 // Utility function to convert rtc::Description to JSON format
