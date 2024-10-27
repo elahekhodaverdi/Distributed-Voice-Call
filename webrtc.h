@@ -74,6 +74,7 @@ public Q_SLOTS:
 private:
     QByteArray readVariant(const rtc::message_variant &data);
     QString descriptionToJson(const rtc::Description &description);
+    void removeConnectionData(const QString &peerId);
 
     inline uint32_t getCurrentTimestamp() {
         using namespace std::chrono;

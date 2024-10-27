@@ -112,8 +112,8 @@ void WebRTC::addPeer(const QString &peerId)
         case rtc::PeerConnection::State::Disconnected:
             break;
         case rtc::PeerConnection::State::Closed:
+            removeConnectionData(peerId);
             Q_EMIT connectionClosed();
-            closeConnection();
             break;
         case rtc::PeerConnection::State::Failed:
             break;
@@ -364,14 +364,20 @@ void WebRTC::resetIsOfferer()
     m_isOfferer = false;
 }
 
+void WebRTC::removeConnectionData(const QString &peerID)
+{
+    if (m_peerConnections.contains(peerID)) {
+        m_peerConnections.remove(peerID);
+        m_peerTracks.remove(peerID);
+        m_gatheringCompleted = false;
+    }
+}
 
 void WebRTC::closeConnection(const QString &peerID)
 {
     qDebug() << "first" << peerID;
     if (m_peerConnections.contains(peerID)) {
         m_peerConnections[peerID]->close();
-        m_peerConnections.remove(peerID);
-        m_peerTracks.remove(peerID);
-        m_gatheringCompleted = false;
+        removeConnectionData(peerID);
     }
 }
