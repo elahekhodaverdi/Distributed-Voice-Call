@@ -22,14 +22,14 @@ WebRTC::WebRTC(QObject *parent)
     : QObject{parent},
     m_audio("Audio")
 {
-    connect(this, &WebRTC::gatheringCompleted, [this] (const QString &peerID) {
+    connect(this, &WebRTC::gatheringCompleted, [this] (const QString &peerId) {
         if (!m_gatheringCompleted) return;
-        m_localDescription = descriptionToJson(m_peerConnections[peerID]->localDescription().value());
-        Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
+        m_localDescription = descriptionToJson(m_peerConnections[peerId]->localDescription().value());
+        Q_EMIT localDescriptionGenerated(peerId, m_localDescription);
         if (m_isOfferer)
-            Q_EMIT this->offerIsReady(peerID, m_localDescription);
+            Q_EMIT this->offerIsReady(peerId, m_localDescription);
         else
-            Q_EMIT this->answerIsReady(peerID, m_localDescription);
+            Q_EMIT this->answerIsReady(peerId, m_localDescription);
     });
 }
 
@@ -150,7 +150,7 @@ void WebRTC::addPeer(const QString &peerId)
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
-    if (m_peerConnections.contains(peerId))
+    if (!m_peerConnections.contains(peerId))
         addPeer(peerId);
     setIsOfferer(true);
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
@@ -162,8 +162,8 @@ void WebRTC::generateAnswerSDP(const QString &peerId)
 {
     if (!m_peerConnections.contains(peerId))
         addPeer(peerId);
-    setIsOfferer(false);
 
+    setIsOfferer(false);
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     connection->localDescription()->generateSdp();
 }
@@ -221,12 +221,12 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
  */
 
 // Set the remote SDP description for the peer that contains metadata about the media being transmitted
-void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
+void WebRTC::setRemoteDescription(const QString &peerId, const QString &sdp)
 {
-    if (!m_peerConnections.contains(peerID))
-        addPeer(peerID);
+    if (!m_peerConnections.contains(peerId))
+        addPeer(peerId);
     // Set the remote SDP description for the peer that contains metadata about the media being transmitted
-    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
+    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     QJsonDocument doc = QJsonDocument::fromJson(sdp.toUtf8());
     QJsonObject jsonObj = doc.object();
     QString type = jsonObj.value("type").toString();
@@ -236,11 +236,11 @@ void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 }
 
 // Add remote ICE candidates to the peer connection
-void WebRTC::setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid)
+void WebRTC::setRemoteCandidate(const QString &peerId, const QString &candidate, const QString &sdpMid)
 {
     try{
-        if (m_peerConnections.contains(peerID)) {
-            m_peerConnections[peerID]->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
+        if (m_peerConnections.contains(peerId)) {
+            m_peerConnections[peerId]->addRemoteCandidate(rtc::Candidate(candidate.toStdString(), sdpMid.toStdString()));
         }
     }
     catch (const std::exception& e) {
@@ -361,19 +361,19 @@ void WebRTC::resetIsOfferer()
     m_isOfferer = false;
 }
 
-void WebRTC::removeConnectionData(const QString &peerID)
+void WebRTC::removeConnectionData(const QString &peerId)
 {
-    if (m_peerConnections.contains(peerID)) {
-        m_peerConnections.remove(peerID);
-        m_peerTracks.remove(peerID);
+    if (m_peerConnections.contains(peerId)) {
+        m_peerConnections.remove(peerId);
+        m_peerTracks.remove(peerId);
         m_gatheringCompleted = false;
     }
 }
 
-void WebRTC::closeConnection(const QString &peerID)
+void WebRTC::closeConnection(const QString &peerId)
 {
-    if (m_peerConnections.contains(peerID)) {
-        m_peerConnections[peerID]->close();
-        removeConnectionData(peerID);
+    if (m_peerConnections.contains(peerId)) {
+        m_peerConnections[peerId]->close();
+        removeConnectionData(peerId);
     }
 }

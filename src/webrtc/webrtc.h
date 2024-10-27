@@ -22,7 +22,7 @@ public:
     Q_INVOKABLE void generateAnswerSDP(const QString &peerId);
     Q_INVOKABLE void addAudioTrack(const QString &peerId, const QString &trackName);
     Q_INVOKABLE void sendTrack(const QString &peerId, const QByteArray &buffer);
-    Q_INVOKABLE void closeConnection(const QString &peerID);
+    Q_INVOKABLE void closeConnection(const QString &peerId);
 
     bool isOfferer() const;
     void setIsOfferer(bool newIsOfferer);
@@ -46,17 +46,17 @@ Q_SIGNALS:
 
     void incommingPacket(const QString &peerId, const QByteArray &data, qint64 len);
 
-    void localDescriptionGenerated(const QString &peerID, const QString &sdp);
+    void localDescriptionGenerated(const QString &peerId, const QString &sdp);
 
-    void localCandidateGenerated(const QString &peerID, const QString &candidate, const QString &sdpMid);
+    void localCandidateGenerated(const QString &peerId, const QString &candidate, const QString &sdpMid);
 
     void isOffererChanged();
 
-    void gatheringCompleted(const QString &peerID);
+    void gatheringCompleted(const QString &peerId);
 
-    void offerIsReady(const QString &peerID, const QString& description);
+    void offerIsReady(const QString &peerId, const QString& description);
 
-    void answerIsReady(const QString &peerID, const QString& description);
+    void answerIsReady(const QString &peerId, const QString& description);
 
     void ssrcChanged();
 
@@ -68,8 +68,8 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 
-    void setRemoteDescription(const QString &peerID, const QString &sdp);
-    void setRemoteCandidate(const QString &peerID, const QString &candidate, const QString &sdpMid);
+    void setRemoteDescription(const QString &peerId, const QString &sdp);
+    void setRemoteCandidate(const QString &peerId, const QString &candidate, const QString &sdpMid);
 
 private:
     QByteArray readVariant(const rtc::message_variant &data);
