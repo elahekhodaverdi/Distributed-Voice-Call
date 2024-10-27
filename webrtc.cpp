@@ -22,11 +22,8 @@ WebRTC::WebRTC(QObject *parent)
     : QObject{parent},
     m_audio("Audio")
 {
-    qDebug() << "constructor";
     connect(this, &WebRTC::gatheringCompleted, [this] (const QString &peerID) {
         if (!m_gatheringCompleted) return;
-
-        qDebug() << "gathering completed 1";
         m_localDescription = descriptionToJson(m_peerConnections[peerID]->localDescription().value());
         Q_EMIT localDescriptionGenerated(peerID, m_localDescription);
         if (m_isOfferer)
@@ -48,7 +45,6 @@ WebRTC::~WebRTC()
 
 void WebRTC::init(const QString &id, bool isOfferer)
 {
-    qDebug() << "init";
     // Initialize WebRTC using libdatachannel library
     rtc::InitLogger(rtc::LogLevel::Error, NULL);
 
@@ -74,7 +70,6 @@ void WebRTC::init(const QString &id, bool isOfferer)
 
 void WebRTC::addPeer(const QString &peerId)
 {
-    qDebug() << "add peer";
     if (m_peerTracks.contains(peerId)) {
         return;
     }
@@ -105,7 +100,6 @@ void WebRTC::addPeer(const QString &peerId)
 
     // Set up a callback for when the state of the peer connection changes
     newPeer->onStateChange([this, peerId](rtc::PeerConnection::State state) {
-        qDebug() << "onStatechange";
         // Handle different states like New, Connecting, Connected, Disconnected, etc.
         switch (state) {
         case rtc::PeerConnection::State::New:
@@ -113,7 +107,6 @@ void WebRTC::addPeer(const QString &peerId)
         case rtc::PeerConnection::State::Connecting:
             break;
         case rtc::PeerConnection::State::Connected:
-            qDebug() << "finally connected";
             Q_EMIT rtcConnected();
             break;
         case rtc::PeerConnection::State::Disconnected:
@@ -323,10 +316,8 @@ QByteArray WebRTC::readVariant(const rtc::message_variant &data)
         const std::string &strData = std::get<std::string>(data);
         resultData =  QByteArray(strData.c_str(), static_cast<int>(strData.size()));
     }
-    qDebug() << resultData.size() << "second read variant" << resultData.toHex();
     if (resultData.size())
         resultData.remove(0, sizeof(RtpHeader));
-    qDebug() << sizeof(RtpHeader) << "dfdf      "<< resultData.size() << "third read variant" << resultData.toHex();
 
     return resultData;
 }
