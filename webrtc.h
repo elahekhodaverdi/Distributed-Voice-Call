@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void generateAnswerSDP(const QString &peerId);
     Q_INVOKABLE void addAudioTrack(const QString &peerId, const QString &trackName);
     Q_INVOKABLE void sendTrack(const QString &peerId, const QByteArray &buffer);
+    Q_INVOKABLE void closeConnection(const QString &peerID);
 
     bool isOfferer() const;
     void setIsOfferer(bool newIsOfferer);
@@ -40,6 +41,8 @@ public:
     void resetBitRate();
 
 Q_SIGNALS:
+
+    void connectionClosed();
 
     void incommingPacket(const QString &peerId, const QByteArray &data, qint64 len);
 

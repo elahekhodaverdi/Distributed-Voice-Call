@@ -70,9 +70,9 @@ void WebRTC::init(const QString &id, bool isOfferer)
 
 void WebRTC::addPeer(const QString &peerId)
 {
-    if (m_peerTracks.contains(peerId)) {
+    if (m_peerConnections.contains(peerId))
         return;
-    }
+
     // Create and add a new peer connection
     auto newPeer = std::make_shared<rtc::PeerConnection>(m_config);
     m_peerConnections.insert(peerId, newPeer);
@@ -112,6 +112,8 @@ void WebRTC::addPeer(const QString &peerId)
         case rtc::PeerConnection::State::Disconnected:
             break;
         case rtc::PeerConnection::State::Closed:
+            Q_EMIT connectionClosed();
+            closeConnection();
             break;
         case rtc::PeerConnection::State::Failed:
             break;
@@ -360,4 +362,16 @@ void WebRTC::setIsOfferer(bool newIsOfferer)
 void WebRTC::resetIsOfferer()
 {
     m_isOfferer = false;
+}
+
+
+void WebRTC::closeConnection(const QString &peerID)
+{
+    qDebug() << "first" << peerID;
+    if (m_peerConnections.contains(peerID)) {
+        m_peerConnections[peerID]->close();
+        m_peerConnections.remove(peerID);
+        m_peerTracks.remove(peerID);
+        m_gatheringCompleted = false;
+    }
 }

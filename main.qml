@@ -30,6 +30,15 @@ Window {
                             output.start();
                         }
 
+        onConnectionClosed: () => {
+                                callbtn.Material.background = "green"
+                                callbtn.text = "Call"
+                                input.stop()
+                                output.stop();
+                                textfield.clear()
+                                callbtn.pushed = false;
+                            }
+
     }
 
     Client{
@@ -145,9 +154,7 @@ Window {
                     webrtc.addPeer(textfield.text)
                     webrtc.generateOfferSDP(textfield.text)
                 } else {
-                    Material.background = "green"
-                    text = "Call"
-                    textfield.clear()
+                    webrtc.closeConnection(textfield.text);
                 }
             }
         }

@@ -64,8 +64,6 @@ qint64 AudioInput::writeData(const char *data, qint64 len)
     }
 
     QByteArray encodedOpusData(reinterpret_cast<const char *>(opusData.data()), encodedBytes);
-    qDebug() << "Audio is ready emit:";
-    qDebug() << encodedOpusData.toHex();
     Q_EMIT audioIsReady(encodedOpusData);
     return len;
 }

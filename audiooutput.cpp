@@ -77,9 +77,6 @@ void AudioOutput::handleStateChanged(QAudio::State newState)
 
 void AudioOutput::addData(const QByteArray &data){
     mutex.lock();
-
-    qDebug() << "Add data in audiooutput";
-    qDebug() << data.toHex();
     playQueue.push(data);
     mutex.unlock();
     Q_EMIT newPacket();
@@ -105,4 +102,10 @@ void AudioOutput::play(){
     mutex.unlock();
 }
 
+
+void AudioOutput::stop()
+{
+    ioDevice->close();
+    audioSink->stop();
+}
 
