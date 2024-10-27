@@ -144,16 +144,14 @@ void WebRTC::addPeer(const QString &peerId)
 
 
     // Add an audio track to the peer connection
-    // rtc::Description::Audio audio = rtc::Description::Audio("audio",
-    //                                                         rtc::Description::Direction::SendRecv);
-    // auto track = newPeer->addTrack(audio);
-    // m_peerTracks.insert(peerId, track);
     addAudioTrack(peerId, "audio");
 }
 
 // Set the local description for the peer's connection
 void WebRTC::generateOfferSDP(const QString &peerId)
 {
+    if (m_peerConnections.contains(peerId))
+        addPeer(peerId);
     setIsOfferer(true);
     std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerId];
     connection->setLocalDescription(rtc::Description::Type::Offer);
@@ -225,17 +223,16 @@ void WebRTC::sendTrack(const QString &peerId, const QByteArray &buffer)
 // Set the remote SDP description for the peer that contains metadata about the media being transmitted
 void WebRTC::setRemoteDescription(const QString &peerID, const QString &sdp)
 {
+    if (!m_peerConnections.contains(peerID))
+        addPeer(peerID);
     // Set the remote SDP description for the peer that contains metadata about the media being transmitted
-    if (m_peerConnections.contains(peerID))
-    {
-        std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
-        QJsonDocument doc = QJsonDocument::fromJson(sdp.toUtf8());
-        QJsonObject jsonObj = doc.object();
-        QString type = jsonObj.value("type").toString();
-        QString sdpValue = jsonObj.value("sdp").toString();
-        m_isOfferer = (type != "offer");
-        connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
-    }
+    std::shared_ptr<rtc::PeerConnection> connection = m_peerConnections[peerID];
+    QJsonDocument doc = QJsonDocument::fromJson(sdp.toUtf8());
+    QJsonObject jsonObj = doc.object();
+    QString type = jsonObj.value("type").toString();
+    QString sdpValue = jsonObj.value("sdp").toString();
+    m_isOfferer = (type != "offer");
+    connection->setRemoteDescription(rtc::Description(sdpValue.toStdString(), type.toStdString()));
 }
 
 // Add remote ICE candidates to the peer connection
@@ -375,7 +372,6 @@ void WebRTC::removeConnectionData(const QString &peerID)
 
 void WebRTC::closeConnection(const QString &peerID)
 {
-    qDebug() << "first" << peerID;
     if (m_peerConnections.contains(peerID)) {
         m_peerConnections[peerID]->close();
         removeConnectionData(peerID);
