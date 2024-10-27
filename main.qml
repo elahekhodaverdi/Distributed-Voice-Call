@@ -31,12 +31,12 @@ Window {
                         }
 
         onConnectionClosed: () => {
+                                callbtn.pushed = false;
                                 callbtn.Material.background = "green"
                                 callbtn.text = "Call"
                                 input.stop()
                                 output.stop();
                                 textfield.clear()
-                                callbtn.pushed = false;
                             }
 
     }
