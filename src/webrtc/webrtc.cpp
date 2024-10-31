@@ -52,10 +52,11 @@ void WebRTC::init(const QString &id, bool isOfferer)
     rtc::Configuration config;
 
     // Add a STUN server to help peers find their public IP addresses
-    config.iceServers.emplace_back("stun:stun.l.google.com:19302");
+    //config.iceServers.emplace_back("stun:stun.l.google.com:19302");
+    config.iceServers.emplace_back("stun:74.234.202.9:3478");
 
     // Add a TURN server for relaying media if a direct connection can't be established
-    // m_config.iceServers.emplace_back("turn:your_turn_server.com", "username", "password");
+    //config.iceServers.emplace_back("turn:188.121.98.3:3478 [guest:somepassword]");
 
     m_config = config;
 

@@ -53,7 +53,8 @@ Client::Client(QObject *parent)
                             Q_EMIT newIceCandidateReceived(fromClientId, candidate, mid);
                         }));
 
-    client.connect("http://127.0.0.1:3000");
+    //client.connect("http://127.0.0.1:3000");
+    client.connect("http://74.234.202.9:3000");
 }
 
 void Client::sendOffer(const QString &id, const QString &sdp)
