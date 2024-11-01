@@ -1,8 +1,8 @@
-## AudioOutput Class
+## **AudioOutput Class**
 
 This class is responsible for handling audio output functionality. It inherits from `QObject` and uses Qt's audio framework along with the Opus decoder to play audio data. The class manages a queue of audio packets and provides mechanisms for decoding and playing them through the system's audio output device.
 
-### Fields
+### **Fields**
 
 ```cpp
     OpusDecoder* decoder;
@@ -22,7 +22,7 @@ This class is responsible for handling audio output functionality. It inherits f
 - **`mediaDevices`**: Provides access to available media devices
 - **`mutex`**: Ensures thread-safe access to the playQueue
 
-### Signals
+### **Signals**
 
 ```cpp
     void newPacket();
@@ -30,7 +30,7 @@ This class is responsible for handling audio output functionality. It inherits f
 
 This signal is emitted whenever new audio data is added to the playQueue, triggering the play mechanism.
 
-### Constructor and Destructor
+### **`Constructor` and `Destructor`**
 
 The constructor initializes the audio system and decoder, while the destructor cleans up the Opus decoder:
 
@@ -50,7 +50,7 @@ AudioOutput::~AudioOutput(){
 
 ### Setup Methods
 
-#### `setupDecoder()`
+#### **`setupDecoder()`**
 
 Initializes the Opus decoder with a sample rate of 48 kHz and mono channel configuration:
 
@@ -65,7 +65,7 @@ void AudioOutput::setupDecoder(){
 }
 ```
 
-#### `setupAudio()`
+#### **`setupAudio()`**
 
 Configures the audio format and initializes the audio sink:
 
@@ -83,7 +83,7 @@ void AudioOutput::setupAudio()
 
 ### Core Functionality
 
-#### `start()`
+#### **`start()`**
 
 Initializes the audio output device and opens it for writing:
 
@@ -108,9 +108,10 @@ void AudioOutput::addData(const QByteArray &data){
 }
 ```
 
-#### `play()`
+#### **`play()`**
 
 Decodes and plays the audio data from the queue. This method:
+
 1. Takes the first packet from the queue
 2. Decodes it using the Opus decoder
 3. Writes the decoded data to the audio device
@@ -141,7 +142,7 @@ The buffer size of 960 samples corresponds to 20ms of audio at 48 kHz sample rat
 
 ### State Management
 
-#### `handleStateChanged(QAudio::State newState)`
+#### **`handleStateChanged(QAudio::State newState)`**
 
 Monitors the audio system's state changes and handles different states (Idle, Stopped, etc.):
 

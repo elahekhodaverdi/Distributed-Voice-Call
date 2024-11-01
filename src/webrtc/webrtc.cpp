@@ -57,7 +57,6 @@ void WebRTC::init(const QString &id, bool isOfferer)
 
     // Add a TURN server for relaying media if a direct connection can't be established
     config.iceServers.emplace_back("turn:guest:somepassword@74.234.202.9:3478");
-    //config.iceServers.emplace_back("turn:188.121.98.3:3478 [guest:somepassword]");
 
     m_config = config;
 
