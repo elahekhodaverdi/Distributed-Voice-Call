@@ -12,7 +12,7 @@ Some of fields isn't used in our code so I igonred them in this section.
 - **`m_payloadType`**: Payload type identifier for RTP, defaulting to 111 (Opus).
 - **`m_audio`**: Holds the audio configuration, including codecs and bit rates.
 - **`m_ssrc`**: Synchronization source (SSRC) identifier for RTP.
-- **`m_isOfferer`**: Indicates if the instance is in the "offer" role in the SDP negotiation.
+- **`m_isOfferer`**: Indicates if the instance is in the "offer" role in the connection.
 - **`m_localId`**: Local peer identifier.
 - **`m_config`**: Stores ICE server and other WebRTC connection configurations.
 - **`m_peerConnections`**: Maps peer identifiers to their peer connection objects.
@@ -29,7 +29,9 @@ Some of fields isn't used in our code so I igonred them in this section.
 - **`ssrcChanged`**, **payloadTypeChanged**, **bitRateChanged**: Notify listeners of changes to SSRC, payload type, and bit rate.
 - **`rtcConnected`**: Emitted when a WebRTC connection has successfully been established.
 
-### Method Prototypes
+### Methods
+
+I only mention the important methods, getters and setters(or resetters) aren't included in this section.
 
 - **`init`**: Initializes WebRTC settings, including ICE servers and audio configuration.
 - **`addPeer`**: Adds a new peer connection and sets up callback functions for handling peer events.
@@ -41,21 +43,7 @@ Some of fields isn't used in our code so I igonred them in this section.
 - **`readVariant`**: Converts a `rtc::message_variant` into a QByteArray.
 - **`descriptionToJson`**: Converts SDP description objects to JSON.
 - **`removeConnectionData`**: Cleans up peer-specific data when a connection is closed.
-
-#### Utility Methods for Configuration
-
-- **`setPayloadType`**: Sets a new payload type and emits the `payloadTypeChanged` signal.
-- **`bitRate`**: Retrieves the current bit rate.
-- **`setBitRate`**: Sets a new bit rate and emits the `bitRateChanged` signal.
-- **`setSsrc`**: Sets a new SSRC and emits the `ssrcChanged` signal.
-- **`resetBitRate`**: Resets the bit rate to the default value (48000).
-- **`payloadType`**: Retrieves the current payload type.
-- **`resetPayloadType`**: Resets the payload type to its default value (111).
-- **`ssrc`**: Retrieves the current SSRC value.
-- **`resetSsrc`**: Resets the SSRC to its default value (2).
-- **`isOfferer`**: Retrieves the current offerer state.
-- **`setIsOfferer`**: Sets the offerer state.
-- **`resetIsOfferer`**: Resets the offerer state to false.
+- **`closeConnection`**: Responsible for closing the connection of a specific peer.
 
 ### **`Constructor`**
 
@@ -197,3 +185,7 @@ The structure of Json is:
 ### **`removeConnectionData(const QString &peerId)`**
 
 Removes peer-specific data when a connection is closed, resetting relevant internal states.
+
+### **`closeConnection(const QString &peerId)`**
+
+This method is responsible for terminating a WebRTC connection associated with a specific peer ID. It checks if the peer ID exists in the `m_peerConnections` map. If it does, it calls the `close()` method on the corresponding connection object, effectively ending the connection. After closing the connection, it invokes the `removeConnectionData` method to clean up any associated data related to that peer ID.
