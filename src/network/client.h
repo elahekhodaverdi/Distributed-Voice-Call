@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <SocketIO/sio_client.h>
+#include <src/SocketIO/sio_client.h>
 #include <QObject>
 
 class Client : public QObject
