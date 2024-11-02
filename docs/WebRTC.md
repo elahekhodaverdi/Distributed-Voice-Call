@@ -2,6 +2,30 @@
 
 The `WebRTC` class manages WebRTC peer-to-peer connections, allowing for the creation and management of audio data channels between peers. Using the `libdatachannel` library, it handles signaling, ICE candidate exchange, media track setup, and transmission of audio data. Key functionalities include SDP (Session Description Protocol) generation for offer and answer handling, configuration of audio tracks, and management of connection states with peers.
 
+### Main Challenges
+
+The main challenge in this part was sending the ICE candidates. When we sent SDPs immediately after generation without considering the ICE candidate gathering state, an error would occur while setting the remote candidate (sent via the server). So, we decided to send the SDP only when the ICE candidate gathering state is complete. As a result, we won’t send any ICE candidates before the gathering state is complete (We check it using `m_gatheringCompleted` variable).
+
+Another problem was with generating the answer SDP. Initially, we used this:
+
+```cpp
+connection->setLocalDescription(rtc::Description::Type::Answer);
+```
+
+This caused exceptions and errors. We then found that after setting the offer SDP, WebRTC automatically handles generating answers, so we only need to use this syntax:
+
+```cpp
+connection->localDescription()->generateSdp();
+```
+
+Another problem was with the audio. The audio input and output were working correctly, but when we connected everything, the received audio was unclear and only produced noise. The issue was that we needed to remove the header (RTPHeader) after receiving it in the `readVariant` method.
+
+```cpp
+if (resultData.size())
+    resultData.remove(0, sizeof(RtpHeader));
+```
+
+
 ### Fields
 
 Some of fields isn't used in our code so I igonred them in this section.
