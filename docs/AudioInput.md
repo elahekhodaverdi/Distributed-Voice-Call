@@ -1,6 +1,5 @@
 # **Distributed Voice Call**
 
-
 ## **AudioInput Class**
 
 This class inherits from `QIODevice`, an abstract class in Qt that is used for handling device input and output. `QIODevice` provides a uniform interface for reading and writing data, as well as managing various data sources like buffers, files, sockets, etc. In `AudioInput`, we use it to write the data from `QAudioSource` after encoding.

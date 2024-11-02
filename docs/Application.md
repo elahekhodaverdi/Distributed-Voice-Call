@@ -2,6 +2,14 @@
 
 This application sets up a basic real-time communication interface using QML and C++. It leverages the `WebRTC`, `Client`, `AudioInput`, and `AudioOutput` classes to enable audio communication over TCP, with WebRTC handling signaling. The main QML file provides a user interface for initiating and managing audio calls, while `main.cpp` registers the classes with the QML engine and loads the QML interface.
 
+## Main Challenges
+
+The main challenge in bringing all the parts together was interacting with the UI. We needed to call class methods based on UI actions, synchronize with signals from other classes, and retrieve some data from the UI. For class signaling, we could have used `QObject::connect`, but since some UI components needed to be updated and data retrieved based on triggered signals, we used `qmlRegisterType` instead. For example:
+
+```cpp
+qmlRegisterType<WebRTC>("Webrtc", 1, 0, "WebRTC");
+```
+
 ## **`main.cpp`**
 
 The `main.cpp` file creates a `QGuiApplication` instance, registers custom C++ classes for use in QML, and loads the QML user interface.
