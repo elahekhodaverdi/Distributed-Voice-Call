@@ -2,12 +2,11 @@
 
 This application sets up a basic real-time communication interface using QML and C++. It leverages the `WebRTC`, `Client`, `AudioInput`, and `AudioOutput` classes to enable audio communication over TCP, with WebRTC handling signaling. The main QML file provides a user interface for initiating and managing audio calls, while `main.cpp` registers the classes with the QML engine and loads the QML interface.
 
-<div style="display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;">
-  <img src="images/app.jpg" style="height: 400px; max-width: 100%;"/>
-  <img src="images/appInCall.jpg" style="height: 400px; max-width: 100%;"/>
-</div>
-
-
+<p align="center">
+  <img src="images/app.jpg" alt="App Normal Mode" height="360px">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="images/appInCall.jpg" alt="App In Call Mode" height="360px">
+</p>
 
 ## **َAudio Classes**
 
