@@ -3,8 +3,8 @@
 #include <QQmlContext>
 #include "audio/audioinput.h"
 #include "audio/audiooutput.h"
-#include "tcp/client.h"
-#include "webrtc/webrtc.h"
+#include "network/client.h"
+#include "network/webrtc.h"
 int main(int argc, char *argv[])
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<AudioInput>("Audio", 1, 0, "AudioInput");
     qmlRegisterType<AudioOutput>("Audio", 1, 0, "AudioOutput");
 
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/src/UI/main.qml"));
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,
