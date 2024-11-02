@@ -4,23 +4,13 @@ This class is responsible for handling audio output functionality. It inherits f
 
 ### **Fields**
 
-```cpp
-    OpusDecoder* decoder;
-    std::queue<QByteArray> playQueue;
-    QIODevice* ioDevice;
-    QAudioFormat audioFormat;
-    QAudioSink* audioSink;
-    QMediaDevices mediaDevices;
-    QMutex mutex;
-```
-
-- **`decoder`**: A pointer to the Opus decoder, used to decode the encoded audio data
-- **`playQueue`**: A queue that stores incoming audio packets (QByteArray) waiting to be played
-- **`ioDevice`**: A pointer to the QIODevice used for writing decoded audio data
-- **`audioFormat`**: Defines the format of the audio output (sample rate, channels, etc.)
-- **`audioSink`**: Handles the actual audio output to the system's audio device
-- **`mediaDevices`**: Provides access to available media devices
-- **`mutex`**: Ensures thread-safe access to the playQueue
+- **`OpusDecoder* decoder`**: A pointer to the Opus decoder, used to decode the encoded audio data
+- **`std::queue<QByteArray> playQueue`**: A queue that stores incoming audio packets (QByteArray) waiting to be played
+- **`QIODevice* ioDevice`**: A pointer to the QIODevice used for writing decoded audio data
+- **`QAudioFormat audioFormat`**: Defines the format of the audio output (sample rate, channels, etc.)
+- **`QAudioSink* audioSink`**: Handles the actual audio output to the system's audio device
+- **`QMediaDevices mediaDevices`**: Provides access to available media devices
+- **`QMutex mutex`**: Ensures thread-safe access to the playQueue
 
 ### **Signals**
 

@@ -1,18 +1,18 @@
 # **Distributed Voice Call**
 
+
 ## **AudioInput Class**
 
 This class inherits from `QIODevice`, an abstract class in Qt that is used for handling device input and output. `QIODevice` provides a uniform interface for reading and writing data, as well as managing various data sources like buffers, files, sockets, etc. In `AudioInput`, we use it to write the data from `QAudioSource` after encoding.
 
+### Main Challenges of Audio Classes
+
+The main challenge was configuring the correct buffer sizes for encoding and decoding, along with setting the sample rate and format. Initially, we used an 8 kHz sample rate and Float format, which amusingly resulted in robotic-sounding audio. We later adjusted to a 48 kHz sample rate and Int16 format. For encoding and decoding, we set the frame size as `len / 2` (2 accounts for the `opus_int16` size and a single channel) and doubled the decoded bytes to match this division. We also set the buffer size to `sample rate / 20 = 48000 / 2` for a 20 ms audio packet. These adjustments are reflected in the `writeData` method of `AudioInput` and the `play` method of `AudioOutput`.
+
 ### **Fields**
 
-```cpp
-    QAudioSource *audio;
-    OpusEncoder *opusEncoder;
-```
-
-- **`audio`**: A pointer to the `QAudioSource`, used to capture audio from the input device.
-- **`opusEncoder`**: A pointer to the Opus encoder, which is used to encode the raw audio data before writing it.
+- **`QAudioSource *audio`**: A pointer to the `QAudioSource`, used to capture audio from the input device.
+- **`OpusEncoder *opusEncoder`**: A pointer to the Opus encoder, which is used to encode the raw audio data before writing it.
 
 ### **Signals**
 
