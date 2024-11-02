@@ -18,8 +18,6 @@ int main(int argc, char *argv[])
     qmlRegisterType<AudioInput>("Audio", 1, 0, "AudioInput");
     qmlRegisterType<AudioOutput>("Audio", 1, 0, "AudioOutput");
 
-    // engine.rootContext()->setContextProperty("audioInput", &audioInput);
-    //engine.rootContext()->setContextProperty("client", &client);
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         &engine,
