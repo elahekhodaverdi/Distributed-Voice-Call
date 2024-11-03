@@ -48,8 +48,98 @@ The signaling server is responsible for exchanging connection information betwee
     * Additional Component: A signaling server is an extra piece of infrastructure to maintain, adding to the complexity of a WebRTC system.
     * Potential Point of Failure: Since all initial connections depend on it, if the signaling server goes down, new connections can’t be established until it’s restored.
 
-### What did we do in this project?
-In this project, we managed to get a free VPS from Azure using a student subscription (which took quite a bit of effort!). We set up Coturn on the VPS to run our own STUN and TURN server, enabling seamless peer-to-peer connectivity for our application. Additionally, we deployed our signaling server on the same VPS, so everything runs online and users can connect without any manual setup or initialization, making our program ready to go right out of the box.
+## What did we do in this project?
+Here’s how we set up a TURN and STUN server on Microsoft Azure using the GitHub Student Pack, making it easy to handle WebRTC connections for peer-to-peer communication. Let me walk you through the setup and what each part of the configuration does.
+
+### 1. Getting the VPS from Microsoft Azure
+
+First, we got a virtual private server (VPS) from Microsoft Azure, thanks to the GitHub Student Pack, which provides free credits for students. Having this cloud server means we get a stable public IP address, perfect for hosting a TURN and STUN server accessible by any client on the internet.
+
+### 2. Installing `coturn` and Setting Up the Config
+
+We chose `coturn` as our TURN/STUN server software—it’s widely used and reliable. After installing it on our Azure VPS, we set up the following configuration to make it work as both a TURN and STUN server. Here’s what the config file looks like and a quick breakdown of what each setting does:
+
+```
+# Listening ports for STUN and TURN
+listening-port=3478
+tls-listening-port=5349
+
+# Enable fingerprinting and long-term credential mechanism
+fingerprint
+lt-cred-mech
+
+# Set the server name and realm to the server's IP address
+server-name=your_public_IP_address
+realm=your_public_IP_address
+
+# Create a test user for authentication (replace with secure values in production)
+user=guest:somepassword
+
+# Set total relay quota and nonce time
+total-quota=100
+stale-nonce=600
+
+# Configure log file location (optional)
+log-file=/var/log/turnserver.log
+simple-log
+
+# Enable relay for TCP and UDP
+relay-ip=your_public_IP_address
+relay-threads=3
+min-port=49152
+max-port=65535
+```
+
+#### What Each Setting Does
+
+- **Listening Ports**: 
+  - `listening-port=3478` and `tls-listening-port=5349` are set to standard ports.
+
+- **Fingerprinting and Credentials**:
+  - `fingerprint` adds a digital fingerprint to each packet, making it easier for clients to verify data integrity.
+  - `lt-cred-mech` enables long-term credentials, which requires clients to authenticate with a username and password.
+
+- **Server Name and Realm**:
+  - `server-name` and `realm` are set to the server’s IP. This way, the server recognizes itself based on its public IP, which is handy during testing.
+
+- **User Authentication**:
+  - We created a test user with `user=guest:somepassword`, which lets us test connections. For production, it’s best to use strong, unique passwords.
+
+- **Quota and Security Settings**:
+  - `total-quota=100` limits the maximum number of concurrent relay connections to prevent overload.
+  - `stale-nonce=600` automatically expires authentication tokens after 10 minutes, which improves security against replay attacks.
+
+- **Logging**:
+  - `log-file` logs activity to `/var/log/turnserver.log`, while `simple-log` keeps the log entries concise and easier to read.
+
+- **Relay for TCP and UDP**:
+  - `relay-ip` is the public IP, and `relay-threads=3` lets the server handle relays on multiple threads.
+  - The port range defined by `min-port` and `max-port` specifies where relayed connections will occur, reducing conflicts with other services.
+
+### 3. Testing the STUN and TURN Server
+
+To check if our setup works, we used [WebRTC’s Trickle ICE tool](https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/). This tool tests the connection and shows the different ICE candidates that the server generates for both STUN and TURN. Everything worked as expected—no errors, and our server responded correctly.
+
+<p align="center">
+  <div style="border: 2px solid #ddd; padding: 10px; display: inline-block;">
+    <img src="../images/turn_server.png" alt="TURN Server" width="100%">
+    <p style="font-weight: bold; text-align: center; margin-top: 5px;">TURN Server</p>
+  </div>
+  <br><br>
+  <div style="border: 2px solid #ddd; padding: 10px; display: inline-block;">
+    <img src="../images/stun_server.png" alt="STUN Server" width="100%">
+    <p style="font-weight: bold; text-align: center; margin-top: 5px;">STUN Server</p>
+  </div>
+</p>
+
+### 4. Adding the Signaling Server
+
+Next, we needed a signaling server to coordinate the initial connection between peers. We added our signaling server code (written in JavaScript) to the VPS and used `pm2` to manage it. `pm2` is great because it keeps the server running in the background and can restart it automatically if it crashes. Now the signaling server is always on and ready to help establish WebRTC connections.
+
+### Final Result
+
+With both the TURN/STUN and signaling servers on the VPS, everything is set up. Now our WebRTC app can connect directly, without any extra setup or local dependencies. This setup is fully hosted on the server, so users can easily connect peer-to-peer even behind firewalls or NATs, thanks to the TURN server relaying the data when needed. 
+
 
 
 
