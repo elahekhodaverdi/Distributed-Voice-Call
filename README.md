@@ -8,7 +8,7 @@ This application sets up a basic real-time communication interface using QML and
   <img src="images/appInCall.jpg" alt="App In Call Mode" height="360px">
 </p>
 
-## **َAudio Classes**
+## **Audio Classes**
 
 ### Main Challenges of Audio Classes
 
