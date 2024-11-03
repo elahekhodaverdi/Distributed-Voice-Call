@@ -1,4 +1,4 @@
-## WebRTC
+## WebRTC Class
 
 The `WebRTC` class manages WebRTC peer-to-peer connections, allowing for the creation and management of audio data channels between peers. Using the `libdatachannel` library, it handles signaling, ICE candidate exchange, media track setup, and transmission of audio data. Key functionalities include SDP (Session Description Protocol) generation for offer and answer handling, configuration of audio tracks, and management of connection states with peers.
 
